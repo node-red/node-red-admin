@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-;(function() {
+// ;(function() {
     /**
      * Copyright 2014 IBM Corp.
      *
@@ -16,7 +16,7 @@
      * limitations under the License.
      **/
 
-    "use strict";
+    // "use strict";
 
     var util = require("util");
     var request = require("request");
@@ -36,11 +36,11 @@
         "node": function() {
             getNode();
         },
-        "modules": function() {
-            getModules();
+        "plugins": function() {
+            getPlugins();
         },
-        "module": function() {
-            getModule();
+        "plugin": function() {
+            getPlugin();
         },
         "enable": function() {
             enableNode();
@@ -52,10 +52,10 @@
             searchNPM();
         },
         "install": function() {
-            installModule();
+            installPlugin();
         },
         "uninstall": function() {
-            uninstallModule();
+            uninstallPlugin();
         }
     };
 
@@ -73,8 +73,8 @@
             "   node\n" +
             "   enable\n" +
             "   disable\n" +
-            "   modules\n" +
-            "   module\n" +
+            "   plugins\n" +
+            "   plugin\n" +
             "   search\n" +
             "   install\n" +
             "   uninstall\n\n" +
@@ -144,30 +144,30 @@
         }
     }
 
-    function getModules() {
+    function getPlugins() {
         if (argv.h || argv.help) {
-            var usage = "modules [options]";
-            var desc = "Shows a list of installed NPM modules";
+            var usage = "plugins [options]";
+            var desc = "Shows a list of installed NPM plug-in packages";
             var options = "-x  --hex   additionally display the hexadecimal id for each node\n";
             console.log(createHelp(usage, desc, options));
         } else if (argv.x || argv.hex) {
-            apiRequest('/modules', {}).then(logHexModuleList).otherwise(logFailure);
+            apiRequest('/plugins', {}).then(logHexPluginList).otherwise(logFailure);
         } else {
-            apiRequest('/modules', {}).then(logSimpleModuleList).otherwise(logFailure);
+            apiRequest('/plugins', {}).then(logSimplePluginList).otherwise(logFailure);
         }
     }
 
-    function getModule() {
-        var module = argv._[1];
-        if (argv.h || argv.help || !module) {
-            var usage = "module [options] <module-name>";
-            var desc = "Shows the status of an installed NPM module";
+    function getPlugin() {
+        var plugin = argv._[1];
+        if (argv.h || argv.help || !plugin) {
+            var usage = "plugin [options] <plugin-name>";
+            var desc = "Shows the status of an installed NPM plug-in package";
             var options = "-x  --hex   additionally display the hexadecimal id for each node";
             console.log(createHelp(usage, desc, options));
         } else if (argv.x || argv.hex) {
-            apiRequest('/modules/' + module, {}).then(logHexModuleList).otherwise(logFailure);
+            apiRequest('/plugins/' + plugin, {}).then(logHexPluginList).otherwise(logFailure);
         } else {
-            apiRequest('/modules/' + module, {}).then(logSimpleModuleList).otherwise(logFailure);
+            apiRequest('/plugins/' + plugin, {}).then(logSimplePluginList).otherwise(logFailure);
         }
     }
 
@@ -176,7 +176,7 @@
         if (argv.h || argv.help || !node) {
             var usage = "enable [options] {node-name|node-hex}";
             var desc = "Enables the specified node and displays the result with the format:\n" +
-                "   [Enabled][Loaded]".green + " [node-module] <node-name> " + "[warning-info]".red;
+                "   [Enabled][Loaded]".green + " [plug-in] <node-name> " + "[warning-info]".red;
             console.log(createHelp(usage, desc));
         } else {
             apiRequest('/nodes/' + node, {
@@ -193,7 +193,7 @@
         if (argv.h || argv.help || !node) {
             var usage = "disable [options] {node-name|node-hex}";
             var desc = "Disables the specified node and displays the result with the format:\n" +
-                "   [Enabled][Loaded]".green + " [node-module] <node-name> " + "[warning-info]".red;
+                "   [Enabled][Loaded]".green + " [plug-in] <node-name> " + "[warning-info]".red;
             console.log(createHelp(usage, desc));
         } else {
             apiRequest('/nodes/' + node, {
@@ -206,11 +206,11 @@
     }
 
     function searchNPM() {
-        var module = argv._[1];
-        if (argv.h || argv.help || !module) {
+        var plugin = argv._[1];
+        if (argv.h || argv.help || !plugin) {
             var usage = "search [options] <search-term>";
-            var desc = "Searches NPM for Node-RED modules relating to the search-term given and displays the results with the format:\n" +
-                "   <module-name>" + " - <module-description>".grey;
+            var desc = "Searches NPM for Node-RED plugins relating to the search-term given and displays the results with the format:\n" +
+                "   <plugin-name>" + " - <plugin-description>".grey;
             console.log(createHelp(usage, desc));
         } else {
             var options = {
@@ -223,7 +223,7 @@
             request(options, function(error, response, body) {
                 if (!error && response.statusCode == 200) {
                     var info = (JSON.parse(body)).rows;
-                    var filter = new RegExp(module);
+                    var filter = new RegExp(plugin);
                     var found = false;
                     for (var i = 0; i < info.length; i++) {
                         var n = info[i];
@@ -244,33 +244,33 @@
         }
     }
 
-    function installModule() {
-        var module = argv._[1];
-        if (argv.h || argv.help || !module) {
-            var usage = "install [options] <node-module>";
-            var desc = "Installs the NPM node packaged module.";
+    function installPlugin() {
+        var plugin = argv._[1];
+        if (argv.h || argv.help || !plugin) {
+            var usage = "install [options] <node-plugin>";
+            var desc = "Installs the NPM node packaged plug-in.";
             console.log(createHelp(usage, desc));
         } else {
             apiRequest('/nodes', {
                 method: "POST",
                 body: JSON.stringify({
-                    module: module
+                    module: plugin
                 })
             }).then(logSimpleNodeList).otherwise(logFailure);
         }
     }
 
-    function uninstallModule() {
-        var module = argv._[1];
-        if (argv.h || argv.help || !module) {
-            var usage = "uninstall [options] <node-module>";
-            var desc = "Uninstalls the NPM node packaged module.";
+    function uninstallPlugin() {
+        var plugin = argv._[1];
+        if (argv.h || argv.help || !plugin) {
+            var usage = "uninstall [options] <node-plugin>";
+            var desc = "Uninstalls the NPM node packaged plug-in.";
             console.log(createHelp(usage, desc));
         } else {
-            apiRequest('/nodes/' + module, {
+            apiRequest('/nodes/' + plugin, {
                 method: "DELETE"
             }).then(function() {
-                console.log("Uninstalled " + module);
+                console.log("Uninstalled " + plugin);
             }).otherwise(logFailure);
         }
     }
@@ -293,26 +293,26 @@
         }
     }
 
-    function logSimpleModuleList(modules) {
-        logModuleList(modules, false);
+    function logSimplePluginList(plugins) {
+        logPluginList(plugins, false);
     }
 
-    function logHexModuleList(modules) {
-        logModuleList(modules, true);
+    function logHexPluginList(plugins) {
+        logPluginList(plugins, true);
     }
 
-    function logModuleList(modules, hex) {
-        if (!util.isArray(modules)) {
-            modules = [modules];
+    function logPluginList(plugins, hex) {
+        if (!util.isArray(plugins)) {
+            plugins = [plugins];
         }
-        for (var i = 0; i < modules.length; ++i) {
-            var m = modules[i];
+        for (var i = 0; i < plugins.length; ++i) {
+            var m = plugins[i];
             console.log(m.name);
             for (var j = 0; j < m.nodes.length; ++j) {
                 var n = m.nodes[j];
                 console.log("   " + formatNodeInfo(n, hex, false));
             }
-            if (i < modules.length - 1) {
+            if (i < plugins.length - 1) {
                 console.log("");
             }
         }
@@ -362,4 +362,4 @@
         help();
     }
 
-})();
+// })();
