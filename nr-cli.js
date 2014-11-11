@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// ;(function() {
+
     /**
      * Copyright 2014 IBM Corp.
      *
@@ -21,7 +21,7 @@
     var util = require("util");
     var request = require("request");
     var colors = require("colors");
-    var apiRequest = require("./lib/request");
+    var api = require("./lib/request");
     var config = require("./lib/config");
 
     var argv = require('minimist')(process.argv.slice(2));
@@ -43,10 +43,10 @@
             getPlugin();
         },
         "enable": function() {
-            enableNode();
+            enable();
         },
         "disable": function() {
-            disableNode();
+            disable();
         },
         "search": function() {
             searchNPM();
@@ -91,7 +91,7 @@
             "Options:".bold + "\n" +
             (options ? "   " + options + "\n" : "") +
             "   -h  --help  display this help text and exit";
-        return helpText;
+        console.log(helpText);
     }
 
     function setTarget() {
@@ -99,7 +99,7 @@
         if (argv.h || argv.help) {
             var usage = "target [options] [url]";
             var desc = "Set or view the target URL";
-            console.log(createHelp(usage, desc));
+            createHelp(usage, desc);
         } else if (target) {
             if (!/^https?:\/\/.+/.test(target)) {
                 console.warn("Invalid target URL: " + target);
@@ -121,11 +121,11 @@
             var desc = "Shows a status list of installed nodes with the format:\n" +
                 "   [Enabled][Loaded]".green + " [node-module] <node-names> " + "[warning-info]".red;
             var options = "-x  --hex   additionally display the hexadecimal id for each node";
-            console.log(createHelp(usage, desc, options));
+            createHelp(usage, desc, options);
         } else if (argv.x || argv.hex) {
-            apiRequest('/nodes', {}).then(logHexNodeList).otherwise(logFailure);
+            api.request('/nodes', {}).then(logHexNodeList).otherwise(logFailure);
         } else {
-            apiRequest('/nodes', {}).then(logSimpleNodeList).otherwise(logFailure);
+            api.request('/nodes', {}).then(logSimpleNodeList).otherwise(logFailure);
         }
     }
 
@@ -136,24 +136,24 @@
             var desc = "Shows the status of the specified node with the format:\n" +
                 "   [Enabled][Loaded]".green + " [node-module] <node-name> " + "[warning-info]".red;
             var options = "-x  --hex   additionally display the hexadecimal id for each node";
-            console.log(createHelp(usage, desc, options));
+            createHelp(usage, desc, options);
         } else if (argv.x || argv.hex) {
-            apiRequest('/nodes/' + node, {}).then(logHexNodeList).otherwise(logFailure);
+            api.request('/nodes/' + node, {}).then(logHexNodeList).otherwise(logFailure);
         } else {
-            apiRequest('/nodes/' + node, {}).then(logSimpleNodeList).otherwise(logFailure);
+            api.request('/nodes/' + node, {}).then(logSimpleNodeList).otherwise(logFailure);
         }
     }
 
     function getPlugins() {
         if (argv.h || argv.help) {
             var usage = "plugins [options]";
-            var desc = "Shows a list of installed NPM plug-in packages";
+            var desc = "Shows a list of installed NPM plugin packages";
             var options = "-x  --hex   additionally display the hexadecimal id for each node\n";
-            console.log(createHelp(usage, desc, options));
+            createHelp(usage, desc, options);
         } else if (argv.x || argv.hex) {
-            apiRequest('/plugins', {}).then(logHexPluginList).otherwise(logFailure);
+            api.request('/plugins', {}).then(logHexPluginList).otherwise(logFailure);
         } else {
-            apiRequest('/plugins', {}).then(logSimplePluginList).otherwise(logFailure);
+            api.request('/plugins', {}).then(logSimplePluginList).otherwise(logFailure);
         }
     }
 
@@ -161,48 +161,110 @@
         var plugin = argv._[1];
         if (argv.h || argv.help || !plugin) {
             var usage = "plugin [options] <plugin-name>";
-            var desc = "Shows the status of an installed NPM plug-in package";
+            var desc = "Shows the status of an installed NPM plugin package";
             var options = "-x  --hex   additionally display the hexadecimal id for each node";
-            console.log(createHelp(usage, desc, options));
+            createHelp(usage, desc, options);
         } else if (argv.x || argv.hex) {
-            apiRequest('/plugins/' + plugin, {}).then(logHexPluginList).otherwise(logFailure);
+            api.request('/plugins/' + plugin, {}).then(logHexPluginList).otherwise(logFailure);
         } else {
-            apiRequest('/plugins/' + plugin, {}).then(logSimplePluginList).otherwise(logFailure);
+            api.request('/plugins/' + plugin, {}).then(logSimplePluginList).otherwise(logFailure);
         }
     }
 
-    function enableNode() {
-        var node = argv._[1];
-        if (argv.h || argv.help || !node) {
-            var usage = "enable [options] {node-name|node-hex}";
-            var desc = "Enables the specified node and displays the result with the format:\n" +
-                "   [Enabled][Loaded]".green + " [plug-in] <node-name> " + "[warning-info]".red;
-            console.log(createHelp(usage, desc));
+    function enable() {
+        var opt = argv._[1];
+        if (argv.h || argv.help || !opt) {
+            var usage = "enable [options] {node-type|node-set|plugin}";
+            var desc = "Enables the specified node set or plugin and displays the result with the format:\n" +
+                "   [Enabled][Loaded]".green + " [plugin:set] <node-name> " + "[warning-info]".red;
+            createHelp(usage, desc);
         } else {
-            apiRequest('/nodes/' + node, {
-                method: "PUT",
-                body: JSON.stringify({
-                    enabled: true
-                })
-            }).then(logSimpleNodeList).otherwise(logFailure);
+            if (opt.indexOf(":") > -1) { // plugin:set
+                var split = opt.split(":");
+                var plugin = split[0];
+                var set = split[1];
+                api.request('/plugins', {}).then(function(plugins) {
+                    for (var i = 0; i < plugins.length; ++i) {
+                        if (plugin === plugins[i].name) {
+                            var nodes = plugins[i].nodes;
+                            for (var j = 0; j < nodes.length; ++j) {
+                                if (opt === nodes[j].name) {
+                                    // TODO: Plugins with no node types
+                                    enableNode(nodes[j].types[0]);
+                                }
+                            }
+                        }
+                    }
+                }).otherwise(logFailure);
+            } else {
+                api.request('/plugins/' + opt, {}).then(function(plugin) { // plugin
+                    for (var i = 0; i < plugin.nodes.length; ++i) {
+                        var node = plugin.nodes[i];
+                        // TODO: Plugins with no node types
+                        enableNode(node.types[0]);
+                    }
+                }).otherwise(function() { // type
+                    enableNode(opt);
+                });
+            }
         }
     }
 
-    function disableNode() {
-        var node = argv._[1];
-        if (argv.h || argv.help || !node) {
-            var usage = "disable [options] {node-name|node-hex}";
-            var desc = "Disables the specified node and displays the result with the format:\n" +
-                "   [Enabled][Loaded]".green + " [plug-in] <node-name> " + "[warning-info]".red;
-            console.log(createHelp(usage, desc));
+    function enableNode(node) {
+        api.request('/nodes/' + node, {
+            method: "PUT",
+            body: JSON.stringify({
+                enabled: true
+            })
+        }).then(logSimpleNodeList).otherwise(logFailure);
+    }
+
+    function disable() {
+        var opt = argv._[1];
+        if (argv.h || argv.help || !opt) {
+            var usage = "disable [options] {node-type|node-set|plugin}";
+            var desc = "Disables the specified node set or plugin and displays the result with the format:\n" +
+                "   [Enabled][Loaded]".green + " [plugin:set] <node-name> " + "[warning-info]".red;
+            createHelp(usage, desc);
         } else {
-            apiRequest('/nodes/' + node, {
-                method: "PUT",
-                body: JSON.stringify({
-                    enabled: false
-                })
-            }).then(logSimpleNodeList).otherwise(logFailure);
+            if (opt.indexOf(":") > -1) { // plugin:set
+                var split = opt.split(":");
+                var plugin = split[0];
+                var set = split[1];
+                api.request('/plugins', {}).then(function(plugins) {
+                    for (var i = 0; i < plugins.length; ++i) {
+                        if (plugin === plugins[i].name) {
+                            var nodes = plugins[i].nodes;
+                            for (var j = 0; j < nodes.length; ++j) {
+                                if (opt === nodes[j].name) {
+                                    // TODO: Plugins with no node types
+                                    disableNode(nodes[j].types[0]);
+                                }
+                            }
+                        }
+                    }
+                }).otherwise(logFailure);
+            } else {
+                api.request('/plugins/' + opt, {}).then(function(plugin) { // plugin
+                    for (var i = 0; i < plugin.nodes.length; ++i) {
+                        var node = plugin.nodes[i];
+                        // TODO: Plugins with no node types
+                        disableNode(node.types[0]);
+                    }
+                }).otherwise(function() { // type
+                    disableNode(opt);
+                });
+            }
         }
+    }
+
+    function disableNode(node) {
+        api.request('/nodes/' + node, {
+            method: "PUT",
+            body: JSON.stringify({
+                enabled: false
+            })
+        }).then(logSimpleNodeList).otherwise(logFailure);
     }
 
     function searchNPM() {
@@ -211,7 +273,7 @@
             var usage = "search [options] <search-term>";
             var desc = "Searches NPM for Node-RED plugins relating to the search-term given and displays the results with the format:\n" +
                 "   <plugin-name>" + " - <plugin-description>".grey;
-            console.log(createHelp(usage, desc));
+            createHelp(usage, desc);
         } else {
             var options = {
                 method: "GET",
@@ -248,10 +310,10 @@
         var plugin = argv._[1];
         if (argv.h || argv.help || !plugin) {
             var usage = "install [options] <node-plugin>";
-            var desc = "Installs the NPM node packaged plug-in.";
-            console.log(createHelp(usage, desc));
+            var desc = "Installs the NPM node packaged plugin.";
+            createHelp(usage, desc);
         } else {
-            apiRequest('/nodes', {
+            api.request('/nodes', {
                 method: "POST",
                 body: JSON.stringify({
                     module: plugin
@@ -264,10 +326,10 @@
         var plugin = argv._[1];
         if (argv.h || argv.help || !plugin) {
             var usage = "uninstall [options] <node-plugin>";
-            var desc = "Uninstalls the NPM node packaged plug-in.";
-            console.log(createHelp(usage, desc));
+            var desc = "Uninstalls the NPM node packaged plugin.";
+            createHelp(usage, desc);
         } else {
-            apiRequest('/nodes/' + plugin, {
+            api.request('/nodes/' + plugin, {
                 method: "DELETE"
             }).then(function() {
                 console.log("Uninstalled " + plugin);
@@ -345,7 +407,7 @@
             str = str.yellow;
         }
         if (n.module && mod) {
-            str += " [" + n.module + "]";
+            str += " [" + n.name + "]";
         }
         str += " " + n.types.join(", ");
         if (n.err) {
@@ -358,8 +420,6 @@
         commands[process.argv[2]].call();
     }
 
-    if (process.argv.length < 3) {
+    if (process.argv.length < 3 || process.argv.length < 4 && (argv.h || argv.help)) {
         help();
     }
-
-// })();
