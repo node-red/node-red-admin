@@ -16,31 +16,25 @@
      * limitations under the License.
      **/
 
-    // "use strict";
-
     var util = require("util");
     var request = require("request");
     var colors = require("colors");
     var api = require("./lib/request");
     var config = require("./lib/config");
 
+    var Table = require('cli-table');
     var argv = require('minimist')(process.argv.slice(2));
+    var format = "   [Enabled][Loaded]".green + " <module> <node-set> <types>";
 
     var commands = {
         "target": function() {
             setTarget();
         },
-        "nodes": function() {
-            getNodes();
+        "list": function() {
+            list();
         },
-        "node": function() {
-            getNode();
-        },
-        "plugins": function() {
-            getPlugins();
-        },
-        "plugin": function() {
-            getPlugin();
+        "view": function() {
+            view();
         },
         "enable": function() {
             enable();
@@ -52,29 +46,26 @@
             searchNPM();
         },
         "install": function() {
-            installPlugin();
+            installModule();
         },
         "uninstall": function() {
-            uninstallPlugin();
+            uninstallModule();
         }
     };
 
     function help() {
         var helpText = "Usage:".bold + "\n" +
-            "   nr-cli <subcommand> [options] [args]\n\n" +
+            "   nr-cli <subcommand> [args] [options]\n\n" +
             "Description:".bold + "\n" +
-            "   Node-RED command-line client, version 1.0.\n\n" +
+            "   Node-RED command-line client, version TODO.\n\n" +
             "Type \'nr-cli <subcommand> --help\' to get help on a specific subcommand.\n" +
-            "Type \'nr-cli --version\' to see just the version number.\n" +
-            "Type \'nr-cli --about\' to see about information.\n\n" +
+            "Type \'nr-cli --version\' to see just the version number.\n\n" +
             "Subcommands:\n".bold +
             "   target\n" +
-            "   nodes\n" +
-            "   node\n" +
+            "   list\n" +
+            "   view\n" +
             "   enable\n" +
             "   disable\n" +
-            "   plugins\n" +
-            "   plugin\n" +
             "   search\n" +
             "   install\n" +
             "   uninstall\n\n" +
@@ -90,14 +81,14 @@
             "   " + description + "\n\n" +
             "Options:".bold + "\n" +
             (options ? "   " + options + "\n" : "") +
-            "   -h  --help  display this help text and exit";
+            "   -h  --help      display this help text and exit";
         console.log(helpText);
     }
 
     function setTarget() {
         var target = argv._[1];
         if (argv.h || argv.help) {
-            var usage = "target [options] [url]";
+            var usage = "target [url] [options]";
             var desc = "Set or view the target URL";
             createHelp(usage, desc);
         } else if (target) {
@@ -115,164 +106,74 @@
         }
     }
 
-    function getNodes() {
+    function list() {
         if (argv.h || argv.help) {
-            var usage = "nodes [options]";
-            var desc = "Shows a status list of installed nodes with the format:\n" +
-                "   [Enabled][Loaded]".green + " [node-module] <node-names> " + "[warning-info]".red;
-            var options = "-x  --hex   additionally display the hexadecimal id for each node";
-            createHelp(usage, desc, options);
-        } else if (argv.x || argv.hex) {
-            api.request('/nodes', {}).then(logHexNodeList).otherwise(logFailure);
+            var usage = "list [options]";
+            var desc = "Lists all of the installed nodes with the format:\n" + format;
+            createHelp(usage, desc);
         } else {
-            api.request('/nodes', {}).then(logSimpleNodeList).otherwise(logFailure);
+            api.request('/nodes', {}).then(logNodeList).otherwise(logFailure);
         }
     }
 
-    function getNode() {
+    function view() {
         var node = argv._[1];
         if (argv.h || argv.help || !node) {
-            var usage = "node [options] <node-name>";
-            var desc = "Shows the status of the specified node with the format:\n" +
-                "   [Enabled][Loaded]".green + " [node-module] <node-name> " + "[warning-info]".red;
-            var options = "-x  --hex   additionally display the hexadecimal id for each node";
-            createHelp(usage, desc, options);
-        } else if (argv.x || argv.hex) {
-            api.request('/nodes/' + node, {}).then(logHexNodeList).otherwise(logFailure);
+            var usage = "view {module|node-set|id} [options]";
+            var desc = "If viewing a module, lists all of the installed nodes in that module with the format:\n" + format +
+                "\n\n   If viewing an individual node-set, shows the node details." +
+                "\n\n   A node id joins its module and node-set with a forward slash, eg. node-red/debug";
+            var opts = "-v  --version   display the module version";
+            createHelp(usage, desc, opts);
+        } else if (argv.v || argv.version) {
+            api.request('/nodes/' + node.split("/")[0], {}).then(logVersion).otherwise(logFailure);
         } else {
-            api.request('/nodes/' + node, {}).then(logSimpleNodeList).otherwise(logFailure);
-        }
-    }
-
-    function getPlugins() {
-        if (argv.h || argv.help) {
-            var usage = "plugins [options]";
-            var desc = "Shows a list of installed NPM plugin packages";
-            var options = "-x  --hex   additionally display the hexadecimal id for each node\n";
-            createHelp(usage, desc, options);
-        } else if (argv.x || argv.hex) {
-            api.request('/plugins', {}).then(logHexPluginList).otherwise(logFailure);
-        } else {
-            api.request('/plugins', {}).then(logSimplePluginList).otherwise(logFailure);
-        }
-    }
-
-    function getPlugin() {
-        var plugin = argv._[1];
-        if (argv.h || argv.help || !plugin) {
-            var usage = "plugin [options] <plugin-name>";
-            var desc = "Shows the status of an installed NPM plugin package";
-            var options = "-x  --hex   additionally display the hexadecimal id for each node";
-            createHelp(usage, desc, options);
-        } else if (argv.x || argv.hex) {
-            api.request('/plugins/' + plugin, {}).then(logHexPluginList).otherwise(logFailure);
-        } else {
-            api.request('/plugins/' + plugin, {}).then(logSimplePluginList).otherwise(logFailure);
+            api.request('/nodes/' + node, {}).then(logDetails).otherwise(logFailure);
         }
     }
 
     function enable() {
-        var opt = argv._[1];
-        if (argv.h || argv.help || !opt) {
-            var usage = "enable [options] {node-type|node-set|plugin}";
-            var desc = "Enables the specified node set or plugin and displays the result with the format:\n" +
-                "   [Enabled][Loaded]".green + " [plugin:set] <node-name> " + "[warning-info]".red;
+        var node = argv._[1];
+        if (argv.h || argv.help || !node) {
+            var usage = "enable {module|id} [options]";
+            var desc = "Enables the specified module or node set and displays the resulting status with the format:\n" +
+                format +
+                "\n\n   A node id joins its module and node-set with a forward slash, eg. node-red/debug";
             createHelp(usage, desc);
         } else {
-            if (opt.indexOf(":") > -1) { // plugin:set
-                var split = opt.split(":");
-                var plugin = split[0];
-                var set = split[1];
-                api.request('/plugins', {}).then(function(plugins) {
-                    for (var i = 0; i < plugins.length; ++i) {
-                        if (plugin === plugins[i].name) {
-                            var nodes = plugins[i].nodes;
-                            for (var j = 0; j < nodes.length; ++j) {
-                                if (opt === nodes[j].name) {
-                                    // TODO: Plugins with no node types
-                                    enableNode(nodes[j].types[0]);
-                                }
-                            }
-                        }
-                    }
-                }).otherwise(logFailure);
-            } else {
-                api.request('/plugins/' + opt, {}).then(function(plugin) { // plugin
-                    for (var i = 0; i < plugin.nodes.length; ++i) {
-                        var node = plugin.nodes[i];
-                        // TODO: Plugins with no node types
-                        enableNode(node.types[0]);
-                    }
-                }).otherwise(function() { // type
-                    enableNode(opt);
-                });
-            }
+            api.request('/nodes/' + node, {
+                method: "PUT",
+                body: JSON.stringify({
+                    enabled: true
+                })
+            }).then(logList).otherwise(logFailure);
         }
-    }
-
-    function enableNode(node) {
-        api.request('/nodes/' + node, {
-            method: "PUT",
-            body: JSON.stringify({
-                enabled: true
-            })
-        }).then(logSimpleNodeList).otherwise(logFailure);
     }
 
     function disable() {
-        var opt = argv._[1];
-        if (argv.h || argv.help || !opt) {
-            var usage = "disable [options] {node-type|node-set|plugin}";
-            var desc = "Disables the specified node set or plugin and displays the result with the format:\n" +
-                "   [Enabled][Loaded]".green + " [plugin:set] <node-name> " + "[warning-info]".red;
+        var node = argv._[1];
+        if (argv.h || argv.help || !node) {
+            var usage = "disable {module|id} [options]";
+            var desc = "Disables the specified module or node set and displays the resulting status with the format:\n" +
+                format +
+                "\n\n   A node id joins its module and node-set with a forward slash, eg. node-red/debug";
             createHelp(usage, desc);
         } else {
-            if (opt.indexOf(":") > -1) { // plugin:set
-                var split = opt.split(":");
-                var plugin = split[0];
-                var set = split[1];
-                api.request('/plugins', {}).then(function(plugins) {
-                    for (var i = 0; i < plugins.length; ++i) {
-                        if (plugin === plugins[i].name) {
-                            var nodes = plugins[i].nodes;
-                            for (var j = 0; j < nodes.length; ++j) {
-                                if (opt === nodes[j].name) {
-                                    // TODO: Plugins with no node types
-                                    disableNode(nodes[j].types[0]);
-                                }
-                            }
-                        }
-                    }
-                }).otherwise(logFailure);
-            } else {
-                api.request('/plugins/' + opt, {}).then(function(plugin) { // plugin
-                    for (var i = 0; i < plugin.nodes.length; ++i) {
-                        var node = plugin.nodes[i];
-                        // TODO: Plugins with no node types
-                        disableNode(node.types[0]);
-                    }
-                }).otherwise(function() { // type
-                    disableNode(opt);
-                });
-            }
+            api.request('/nodes/' + node, {
+                method: "PUT",
+                body: JSON.stringify({
+                    enabled: false
+                })
+            }).then(logList).otherwise(logFailure);
         }
     }
 
-    function disableNode(node) {
-        api.request('/nodes/' + node, {
-            method: "PUT",
-            body: JSON.stringify({
-                enabled: false
-            })
-        }).then(logSimpleNodeList).otherwise(logFailure);
-    }
-
     function searchNPM() {
-        var plugin = argv._[1];
-        if (argv.h || argv.help || !plugin) {
-            var usage = "search [options] <search-term>";
-            var desc = "Searches NPM for Node-RED plugins relating to the search-term given and displays the results with the format:\n" +
-                "   <plugin-name>" + " - <plugin-description>".grey;
+        var module = argv._[1];
+        if (argv.h || argv.help || !module) {
+            var usage = "search <search-term> [options]";
+            var desc = "Searches NPM for Node-RED modules relating to the search-term given and displays the results with the format:\n" +
+                "   <module-name>" + " - <module-description>".grey;
             createHelp(usage, desc);
         } else {
             var options = {
@@ -285,7 +186,7 @@
             request(options, function(error, response, body) {
                 if (!error && response.statusCode == 200) {
                     var info = (JSON.parse(body)).rows;
-                    var filter = new RegExp(plugin);
+                    var filter = new RegExp(module);
                     var found = false;
                     for (var i = 0; i < info.length; i++) {
                         var n = info[i];
@@ -306,82 +207,112 @@
         }
     }
 
-    function installPlugin() {
-        var plugin = argv._[1];
-        if (argv.h || argv.help || !plugin) {
-            var usage = "install [options] <node-plugin>";
-            var desc = "Installs the NPM node packaged plugin.";
+    function installModule() {
+        var module = argv._[1];
+        if (argv.h || argv.help || !module) {
+            var usage = "install <module> [options]";
+            var desc = "Installs the module from NPM.";
             createHelp(usage, desc);
         } else {
             api.request('/nodes', {
                 method: "POST",
                 body: JSON.stringify({
-                    module: plugin
+                    module: module
                 })
-            }).then(logSimpleNodeList).otherwise(logFailure);
+            }).then(logList).otherwise(logFailure);
         }
     }
 
-    function uninstallPlugin() {
-        var plugin = argv._[1];
-        if (argv.h || argv.help || !plugin) {
-            var usage = "uninstall [options] <node-plugin>";
-            var desc = "Uninstalls the NPM node packaged plugin.";
+    function uninstallModule() {
+        var module = argv._[1];
+        if (argv.h || argv.help || !module) {
+            var usage = "uninstall <module> [options]";
+            var desc = "Uninstalls the NPM module from Node-RED.";
             createHelp(usage, desc);
         } else {
-            api.request('/nodes/' + plugin, {
+            api.request('/nodes/' + module, {
                 method: "DELETE"
             }).then(function() {
-                console.log("Uninstalled " + plugin);
+                console.log("Uninstalled " + module);
             }).otherwise(logFailure);
         }
     }
 
-    function logSimpleNodeList(nodes) {
-        logNodeList(nodes, false);
-    }
-
-    function logHexNodeList(nodes) {
-        logNodeList(nodes, true);
-    }
-
-    function logNodeList(nodes, hex) {
-        if (!util.isArray(nodes)) {
-            nodes = [nodes];
-        }
-        for (var i = 0; i < nodes.length; i++) {
-            var n = nodes[i];
-            console.log(formatNodeInfo(n, hex, true));
+    function logDetails(result) {
+        if (result.nodes) {             // summary of node-module
+            logNodeList(result.nodes);
+        } else {                        // detailed node-set
+            logNodeDetails(result);
         }
     }
 
-    function logSimplePluginList(plugins) {
-        logPluginList(plugins, false);
-    }
-
-    function logHexPluginList(plugins) {
-        logPluginList(plugins, true);
-    }
-
-    function logPluginList(plugins, hex) {
-        if (!util.isArray(plugins)) {
-            plugins = [plugins];
+    function logList(result, details) {
+        if (result.nodes) {             // summary of node-module
+            logNodeList(result.nodes);
+        } else {                        // summary of node-set
+            logNodeList(result);
         }
-        for (var i = 0; i < plugins.length; ++i) {
-            var m = plugins[i];
-            console.log(m.name);
-            for (var j = 0; j < m.nodes.length; ++j) {
-                var n = m.nodes[j];
-                console.log("   " + formatNodeInfo(n, hex, false));
-            }
-            if (i < plugins.length - 1) {
-                console.log("");
+    }
+
+    function logNodeDetails(node) {
+        if (util.isArray(node)) {
+            if (node.length > 1) {
+                multipleMatches(node);
+                return;
+            } else {
+                node = node[0];
             }
         }
+        var table = plainTable();
+
+        table.push(["ID".bold, node.id]);
+        table.push(["Node-Set".bold, node.name]);
+        table.push(["Module".bold, node.module]);
+        table.push(["Version".bold, node.version]);
+        table.push(["Types".bold, node.types.join(", ")]);
+        table.push(["Enabled".bold, node.enabled]);
+        table.push(["Loaded".bold, node.loaded]);
+        table.push(["Errors".bold, node.err ? node.err.red : "None"]);
+
+        console.log(table.toString());
+    }
+
+    function logVersion(module) {
+        if (module.version) {
+            console.log(module.version);
+        } else {
+            logFailure("Version not found");
+        }
+    }
+
+    function logNodeList(nodes) {
+        if (nodes.multipleMatches) {
+            multipleMatches(nodes.matches);
+        } else {
+            if (!util.isArray(nodes)) {
+                nodes = [nodes];
+            }
+
+            var table = plainTable();
+            nodes.forEach(function (n) {
+                var types = n.types.join(", ");
+                table.push([createStatus(n), n.module, n.name, types]);
+            });
+
+            console.log(table.toString());
+        }
+
     }
 
     function logFailure(msg) {
         console.log(msg.red);
+    }
+
+    function multipleMatches(nodes) {
+        console.log(nodes.length + " matching, did you mean?");
+        nodes.forEach(function (n) {
+            console.log("   " + n.id);
+        });
     }
 
     function formatBoolean(v, c) {
@@ -392,28 +323,28 @@
         }
     }
 
-    function formatNodeInfo(n, hex, mod) {
-        var inError = n.hasOwnProperty("err");
+    function plainTable() {
+        return new Table({
+            chars: { 'top': '' , 'top-mid': '' , 'top-left': '' , 'top-right': '',
+                'bottom': '' , 'bottom-mid': '' , 'bottom-left': '' ,
+                'bottom-right': '', 'left': '' , 'left-mid': '' , 'mid': '' ,
+                'mid-mid': '', 'right': '' , 'right-mid': '' , 'middle': '  ' },
+            style: { 'padding-left': 0, 'padding-right': 0 }
+        });
+    }
 
-        var str = formatBoolean(n.enabled, "X") + formatBoolean(n.loaded, "L");
-        if (hex) {
-            str += " " + n.id;
-        }
-        if (n.enabled && n.loaded) {
-            str = str.green;
-        } else if (n.enabled && n.err) {
-            str = str.red;
+    function createStatus(node) {
+        var status = formatBoolean(node.enabled, "X") + formatBoolean(node.loaded, "L");
+
+        if (node.enabled && node.loaded) {
+            status = status.green;
+        } else if (node.enabled && node.err) {
+            status = status.red;
         } else {
-            str = str.yellow;
+            status = status.yellow;
         }
-        if (n.module && mod) {
-            str += " [" + n.name + "]";
-        }
-        str += " " + n.types.join(", ");
-        if (n.err) {
-            str += " " + n.err.red;
-        }
-        return str;
+
+        return status;
     }
 
     if (commands[process.argv[2]]) {
@@ -422,4 +353,8 @@
 
     if (process.argv.length < 3 || process.argv.length < 4 && (argv.h || argv.help)) {
         help();
+    }
+
+    if (process.argv.length < 4 && (argv.v || argv.version)) {
+        // version(); TODO
     }

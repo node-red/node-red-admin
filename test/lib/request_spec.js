@@ -14,7 +14,6 @@
  * limitations under the License.
  **/
 
-
 var should = require("should");
 var sinon = require("sinon");
 var fs = require("fs");
@@ -59,11 +58,10 @@ describe("cli request", function() {
         });
     }));
 
-    it('returns the json response to a delete', sinon.test(function(done) {
-        this.stub(request, 'del').yields(null, {statusCode:200}, JSON.stringify({a: "b"}));
+    it('returns to a delete', sinon.test(function(done) {
+        this.stub(request, 'del').yields(null, {statusCode:204});
 
-        api.request("/nodes/plugin",{method: "DELETE"}).then(function(res) {
-            res.should.eql({a:"b"});
+        api.request("/nodes/plugin",{method: "DELETE"}).then(function() {
             done();
         }).otherwise(function(err) {
             done(err);

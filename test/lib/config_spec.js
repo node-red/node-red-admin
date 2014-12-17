@@ -45,6 +45,7 @@ describe("cli config", function() {
 
         config.target.should.eql("http://another.example.com:1880");
         config.target = "http://final.example.com:1880";
+        config.target.should.eql("http://final.example.com:1880");
 
         fs.readFileSync.calledOnce.should.be.true;
         fs.writeFileSync.calledOnce.should.be.true;
