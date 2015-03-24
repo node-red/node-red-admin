@@ -1,7 +1,7 @@
 {
     "name": "node-red-cli",
     "version": "0.1.0",
-    "description": "A command-line tool for Node-RED",
+    "description": "The Node-RED admin command line interface",
     "homepage": "http://nodered.org",
     "license": "Apache",
     "repository": {
