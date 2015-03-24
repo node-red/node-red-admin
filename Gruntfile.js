@@ -28,7 +28,7 @@ module.exports = function(grunt) {
                     ui: 'bdd',
                     reporter: 'spec'
                 },
-                cli: { src: ["test/*_spec.js", "test/lib/*_spec.js"] }
+                cli: { src: ["test/**/*_spec.js"] }
             },
             jshint: {
                 options: {
@@ -43,9 +43,8 @@ module.exports = function(grunt) {
                     "sub": true       // don't warn that foo['bar'] should be written as foo.bar
                 },
                 cli: [
-                    'Gruntfile.js',
-                    'nr-cli.js',
-                    'lib/*.js',
+                    'node-red-admin.js',
+                    'lib/**/*.js',
                 ]
             }
     });
