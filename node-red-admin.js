@@ -31,7 +31,8 @@ var commands = {
     "disable": require("./lib/commands/disable"),
     "search": require("./lib/commands/search"),
     "install": require("./lib/commands/install"),
-    "remove": require("./lib/commands/remove")
+    "remove": require("./lib/commands/remove"),
+    "login": require("./lib/commands/login")
 };
 
 
@@ -43,6 +44,7 @@ function help() {
         "   Node-RED command-line client\n\n" +
         "Commands:\n".bold +
         "   target\n" +
+        "   login\n" +
         "   list\n" +
         "   info\n" +
         "   enable\n" +

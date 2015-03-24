@@ -25,7 +25,8 @@
         "should": "^4.1.0",
         "sinon": "^1.11.1",
         "when": "3.4.6",
-        "cli-table": "0.3.1"
+        "cli-table": "0.3.1",
+        "read": "1.0.5"
     },
     "devDependencies": {
         "grunt": "0.4.5",
