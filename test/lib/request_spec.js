@@ -22,7 +22,7 @@ var request = require("request");
 var api = require("../../lib/request");
 var config = require("../../lib/config");
 
-describe("cli request", function() {
+describe("lib/request", function() {
     "use strict";
     before(function() {
         sinon.stub(config,"target",function() { return "http://example.com/target"; });
