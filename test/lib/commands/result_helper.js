@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
+var colors = require("colors");
+var sinon = require("sinon");
+var result = require("../../../lib/result");
 
-var request = require("../request");
- 
-function command(argv,result) {
-    var node = argv._[1];
-    if (!node) {
-        return result.help(command);
+module.exports = {
+    log: sinon.spy(),
+    warn: sinon.spy(),
+    help: sinon.spy(),
+    logList: sinon.spy(),
+    logNodeList: sinon.spy(),
+    logDetails: sinon.spy(),
+    
+    reset: function() {
+        module.exports.log.reset();
+        module.exports.warn.reset();
+        module.exports.help.reset();
+        module.exports.logList.reset();
+        module.exports.logNodeList.reset();
+        module.exports.logDetails.reset();
     }
-    return request.request('/nodes/' + node, {
-        method: "PUT",
-        body: JSON.stringify({
-            enabled: false
-        })
-    }).then(result.logList).otherwise(result.warn);
-}
-command.name = "disable";
-command.usage = command.name+" {module|id}";
-command.description = "Disable the specified module or node set";
-
-
-module.exports = command;
+};

@@ -14,4 +14,61 @@
  * limitations under the License.
  **/
 
-var result = require("../../../lib/commands/target");
+var command = require("../../../lib/commands/target");
+
+var should = require("should");
+var sinon = require("sinon");
+var when = require("when");
+
+var config = require("../../../lib/config");
+
+var result = require("./result_helper");
+
+describe("commands/target", function() {
+    var target;
+    beforeEach(function() {
+        target = "http://test.example.com";
+        sinon.stub(config,"target", function(arg) {
+            if (arg) { target = arg } else { return target;}
+        });
+    });
+    afterEach(function() {
+        result.reset();
+        config.target.restore();
+    });
+    
+    it('queries the target', function(done) {
+        command({_:[]},result);
+        config.target.called.should.be.true;
+        config.target.args[0].should.have.lengthOf(0);
+        result.log.called.should.be.true;
+        /http\:\/\/test\.example\.com/.test(result.log.args[0][0]).should.be.true;
+        done();
+    });
+    
+    it('sets the target', function(done) {
+        command({_:[null,"http://newtarget.example.com"]},result);
+        config.target.called.should.be.true;
+        config.target.args[0][0].should.eql("http://newtarget.example.com");
+        result.log.called.should.be.true;
+        /http\:\/\/newtarget\.example\.com/.test(result.log.args[0][0]).should.be.true;
+        done();
+    });
+    
+    it('rejects non http targets', function(done) {
+        command({_:[null,"ftp://newtarget.example.com"]},result);
+        config.target.called.should.be.false;
+        result.warn.called.should.be.true;
+        done();
+    });
+    it('strips trailing slash from target', function(done) {
+        command({_:[null,"http://newtarget.example.com/"]},result);
+        config.target.called.should.be.true;
+        config.target.args[0][0].should.eql("http://newtarget.example.com");
+        done();
+    });
+    
+    
+    
+        
+});

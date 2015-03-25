@@ -14,4 +14,49 @@
  * limitations under the License.
  **/
 
-var result = require("../../../lib/commands/install");
+var command = require("../../../lib/commands/install");
+
+var should = require("should");
+var sinon = require("sinon");
+var when = require("when");
+
+var request = require("../../../lib/request");
+var result = require("./result_helper");
+
+describe("commands/install", function() {
+    afterEach(function() {
+        if (request.request.restore) {
+            request.request.restore();
+        }
+        result.reset();
+    });
+    
+    it('installs a node', function(done) {
+        var error;
+        sinon.stub(request,"request",function(path,opts) {
+            try {
+                should(path).be.eql("/nodes");
+                opts.should.eql({
+                    method:"POST",
+                    body:'{"module":"testnode"}'
+                });
+            } catch(err) {
+                error = err;
+            }
+            return when.resolve([]);
+        });
+        command({_:[null,"testnode"]},result).then(function() {
+            if (error) {
+                throw error;
+            }
+            result.logDetails.called.should.be.true;
+            done();
+        }).otherwise(done);
+    });
+    
+    it('displays command help if node not specified', function(done) {
+        command({_:{}},result);
+        result.help.called.should.be.true;
+        done();
+    });
+});
