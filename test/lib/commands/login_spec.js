@@ -48,24 +48,21 @@ describe("commands/list", function() {
     });
     
     it('logs in user', function(done) {
-        var error;
+        var requestStub = sinon.stub(request,"request");
+        requestStub.onCall(0).returns(when.resolve({type:"credentials"}));
+        requestStub.onCall(1).returns(when.resolve({access_token:"12345"}));
         
-        sinon.stub(request,"request",function(path,opts) {
-            try {
-                should(path).be.eql("/auth/token");
-                opts.should.eql({
-                    method:"POST",
-                    body:'{"client_id":"node-red-admin","grant_type":"password","scope":"*","username":"username","password":"password"}'
-                });
-            } catch(err) {
-                error = err;
-            }
-            return when.resolve({access_token:"12345"});
-        });
+        
         command({},result).then(function() {
-            if (error) {
-                throw error;
-            }
+            requestStub.calledTwice.should.be.true;
+            requestStub.args[0][0].should.eql("/auth/login");
+            requestStub.args[1][0].should.eql("/auth/token");
+            requestStub.args[1][1].should.eql({
+                method:"POST",
+                body:'{"client_id":"node-red-admin","grant_type":"password","scope":"*","username":"username","password":"password"}'
+            });
+            
+            
             config.tokens.calledTwice.should.be.true;
             should(config.tokens.args[0][0]).not.exist;
             config.tokens.args[1][0].should.eql({access_token:"12345"});
@@ -76,16 +73,49 @@ describe("commands/list", function() {
         }).otherwise(done);
     });
     
+    it('handles unsupported login type', function(done) {
+        var requestStub = sinon.stub(request,"request");
+        requestStub.onCall(0).returns(when.resolve({type:"unknown"}));
+        requestStub.onCall(1).returns(when.resolve({access_token:"12345"}));
+        command({},result).then(function() {
+            requestStub.calledOnce.should.be.true;
+            requestStub.args[0][0].should.eql("/auth/login");
+            /Unsupported login type/.test(result.warn.args[0][0]).should.be.true;
+            done();
+        }).otherwise(done);
+    });
+    it('handles no authentication', function(done) {
+        var requestStub = sinon.stub(request,"request");
+        requestStub.onCall(0).returns(when.resolve({}));
+        command({},result).then(function() {
+            requestStub.calledOnce.should.be.true;
+            requestStub.args[0][0].should.eql("/auth/login");
+            result.log.called.should.be.false;
+            result.warn.called.should.be.false;
+            done();
+        }).otherwise(done);
+    });
     it('handles login failure', function(done) {
-        var error;
-        
-        sinon.stub(request,"request",function(path,opts) {
-            return when.reject();
-        });
+        var requestStub = sinon.stub(request,"request");
+        requestStub.onCall(0).returns(when.resolve({type:"credentials"}));
+        requestStub.onCall(1).returns(when.reject());
         command({},result).then(function() {
             config.tokens.calledOnce.should.be.true;
             should(config.tokens.args[0][0]).not.exist;
             
+            result.log.called.should.be.false;
+            result.warn.called.should.be.true;
+            /Login failed/.test(result.warn.args[0][0]).should.be.true;
+            done();
+        }).otherwise(done);
+    });
+    
+    it('handles unexpected error', function(done) {
+        var requestStub = sinon.stub(request,"request");
+        requestStub.onCall(0).returns(when.reject());
+        command({},result).then(function() {
+            config.tokens.calledOnce.should.be.true;
+            should(config.tokens.args[0][0]).not.exist;
             result.log.called.should.be.false;
             result.warn.called.should.be.true;
             /Login failed/.test(result.warn.args[0][0]).should.be.true;
