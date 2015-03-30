@@ -155,15 +155,34 @@ describe("lib/request", function() {
         });
     });
     
+    
     it('returns unexpected status', function(done) {
         sinon.stub(request, 'get').yields(null, {statusCode:101},"response");
 
         api.request("/nodes/plugin",{}).then(function() {
             request.get.restore();
-            done(new Error("Unauthorised response not rejected"));
+            done(new Error("Unexpected status not logged"));
         }).otherwise(function(err) {
             try {
                 err.should.eql("101: response");
+                done();
+            } catch(err) {
+                done(err);
+            } finally {
+                request.get.restore();
+            }
+        });
+    });
+    
+    it('returns server message', function(done) {
+        sinon.stub(request, 'get').yields(null, {statusCode:101},'{"message":"server response"}');
+
+        api.request("/nodes/plugin",{}).then(function() {
+            request.get.restore();
+            done(new Error("Unexpected status not logged"));
+        }).otherwise(function(err) {
+            try {
+                err.should.eql("101: server response");
                 done();
             } catch(err) {
                 done(err);
