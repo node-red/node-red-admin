@@ -1,5 +1,8 @@
 # Node-RED Command Line Tool
 
+[![Build Status](https://travis-ci.org/node-red/node-red-admin.svg?branch=master)](https://travis-ci.org/node-red/node-red-admin) [![Coverage Status](https://coveralls.io/repos/node-red/node-red-admin/badge.svg?branch=master)](https://coveralls.io/r/node-red/node-red-admin?branch=master)
+
+
 Install this globally to make the `node-red-admin` command available on
 your path:
 
