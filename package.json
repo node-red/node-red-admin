@@ -1,5 +1,5 @@
 {
-    "name": "node-red-cli",
+    "name": "node-red-admin",
     "version": "0.1.0",
     "description": "The Node-RED admin command line interface",
     "homepage": "http://nodered.org",
