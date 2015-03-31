@@ -6,7 +6,7 @@
     "license": "Apache",
     "repository": {
         "type": "git",
-        "url": "https://github.com/node-red/node-red-cli.git"
+        "url": "https://github.com/node-red/node-red-admin.git"
     },
     "engines": {
         "node": ">=0.10"
