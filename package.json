@@ -1,9 +1,9 @@
 {
     "name": "node-red-admin",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "The Node-RED admin command line interface",
     "homepage": "http://nodered.org",
-    "license": "Apache",
+    "license": "Apache-2.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/node-red/node-red-admin.git"
@@ -17,22 +17,21 @@
     ],
     "preferGlobal": "true",
     "dependencies": {
-        "colors": "1.0.3",
-        "grunt-contrib-jshint": "^0.10.0",
-        "grunt-simple-mocha": "^0.4.0",
-        "minimist": "1.1.0",
-        "request": "2.42.0",
-        "should": "^4.1.0",
-        "sinon": "^1.11.1",
-        "when": "3.4.6",
+        "colors": "1.1.2",
+        "minimist": "1.2.0",
+        "request": "2.64.0",
+        "when": "3.7.3",
         "cli-table": "0.3.1",
-        "read": "1.0.5"
+        "read": "1.0.7"
     },
     "devDependencies": {
         "grunt": "0.4.5",
         "grunt-cli": "0.1.13",
-        "mocha": "1.21.4",
-        "should": "4.0.4"
+        "grunt-contrib-jshint": "0.11.3",
+        "grunt-simple-mocha": "^0.4.0",
+        "mocha": "2.3.3",
+        "should": "6.0.3",
+        "sinon": "1.17.1"
     },
     "bin": {
         "node-red-admin": "node-red-admin.js"
