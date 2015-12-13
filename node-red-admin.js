@@ -32,7 +32,8 @@ var commands = {
     "search": require("./lib/commands/search"),
     "install": require("./lib/commands/install"),
     "remove": require("./lib/commands/remove"),
-    "login": require("./lib/commands/login")
+    "login": require("./lib/commands/login"),
+    "hash-pw": require("./lib/commands/hash")
 };
 
 
@@ -51,7 +52,9 @@ function help() {
         "   disable\n" +
         "   search\n" +
         "   install\n" +
-        "   remove\n";
+        "   remove\n" +
+        "   hash-pw\n"
+    ;
     console.log(helpText);
 }
 
@@ -67,4 +70,3 @@ if (command) {
 } else {
     help();
 }
-
