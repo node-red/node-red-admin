@@ -46,13 +46,13 @@ describe("commands/list", function() {
             request.request.restore();
         }
     });
-    
+
     it('logs in user', function(done) {
         var requestStub = sinon.stub(request,"request");
         requestStub.onCall(0).returns(when.resolve({type:"credentials"}));
         requestStub.onCall(1).returns(when.resolve({access_token:"12345"}));
-        
-        
+
+
         command({},result).then(function() {
             requestStub.calledTwice.should.be.true;
             requestStub.args[0][0].should.eql("/auth/login");
@@ -61,18 +61,18 @@ describe("commands/list", function() {
                 method:"POST",
                 body:'{"client_id":"node-red-admin","grant_type":"password","scope":"*","username":"username","password":"password"}'
             });
-            
-            
+
+
             config.tokens.calledTwice.should.be.true;
-            should(config.tokens.args[0][0]).not.exist;
+            should.not.exist(config.tokens.args[0][0]);
             config.tokens.args[1][0].should.eql({access_token:"12345"});
-            
+
             /Logged in/.test(result.log.args[0][0]).should.be.true;
-            
+
             done();
         }).otherwise(done);
     });
-    
+
     it('handles unsupported login type', function(done) {
         var requestStub = sinon.stub(request,"request");
         requestStub.onCall(0).returns(when.resolve({type:"unknown"}));
@@ -101,27 +101,27 @@ describe("commands/list", function() {
         requestStub.onCall(1).returns(when.reject());
         command({},result).then(function() {
             config.tokens.calledOnce.should.be.true;
-            should(config.tokens.args[0][0]).not.exist;
-            
+            should.not.exist(config.tokens.args[0][0]);
+
             result.log.called.should.be.false;
             result.warn.called.should.be.true;
             /Login failed/.test(result.warn.args[0][0]).should.be.true;
             done();
         }).otherwise(done);
     });
-    
+
     it('handles unexpected error', function(done) {
         var requestStub = sinon.stub(request,"request");
         requestStub.onCall(0).returns(when.reject());
         command({},result).then(function() {
             config.tokens.calledOnce.should.be.true;
-            should(config.tokens.args[0][0]).not.exist;
+            should.not.exist(config.tokens.args[0][0]);
             result.log.called.should.be.false;
             result.warn.called.should.be.true;
             /Login failed/.test(result.warn.args[0][0]).should.be.true;
             done();
         }).otherwise(done);
     });
-    
-        
+
+
 });

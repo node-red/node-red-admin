@@ -1,6 +1,6 @@
 {
     "name": "node-red-admin",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "description": "The Node-RED admin command line interface",
     "homepage": "http://nodered.org",
     "license": "Apache-2.0",
@@ -12,30 +12,34 @@
         "node": ">=0.10"
     },
     "contributors": [
-        {"name": "Nick O'Leary"},
-        {"name": "Anna Thomas"}
+        {
+            "name": "Nick O'Leary"
+        },
+        {
+            "name": "Anna Thomas"
+        }
     ],
     "preferGlobal": "true",
     "dependencies": {
-        "bcryptjs": "2.3.0",
-        "cli-table": "0.3.1",
-        "colors": "1.1.2",
-        "minimist": "1.2.0",
-        "read": "1.0.7",
-        "request": "2.74.0",
-        "when": "3.7.7"
+        "bcryptjs": "^2.4.3",
+        "cli-table": "^0.3.1",
+        "colors": "^1.3.2",
+        "minimist": "^1.2.0",
+        "read": "^1.0.7",
+        "request": "^2.88.0",
+        "when": "^3.7.8"
     },
     "devDependencies": {
-        "grunt": "1.0.1",
-        "grunt-cli": "1.2.0",
-        "grunt-contrib-jshint": "1.0.0",
-        "grunt-simple-mocha": "0.4.1",
-        "mocha": "2.3.4",
-        "should": "6.0.3",
-        "sinon": "1.17.5"
+        "grunt": "^1.0.3",
+        "grunt-cli": "^1.3.1",
+        "grunt-contrib-jshint": "^2.0.0",
+        "grunt-simple-mocha": "^0.4.1",
+        "mocha": "^2.5.3",
+        "should": "^6.0.3",
+        "sinon": "^1.17.7"
     },
     "optionalDependencies": {
-        "bcrypt":"0.8.7"
+        "bcrypt": "^3.0.1"
     },
     "bin": {
         "node-red-admin": "node-red-admin.js"
