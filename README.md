@@ -8,7 +8,9 @@ your path:
 
     npm install -g node-red-admin
 
-Note: you may need to run this with `sudo`, or from within an Administrator command shell.
+Note: you may need to run this with `sudo`, or from within an Administrator command shell. 
+
+You may also need to add `--unsafe-perm` to the command if you hit permissions errors during install.
 
 
 ## Usage
