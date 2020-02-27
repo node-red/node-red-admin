@@ -36,7 +36,7 @@ describe("commands/install", function() {
         
         command({_:[null,"testnode"]},result).then(function() {
             result.log.called.should.be.true;
-            result.log.args[0][0].should.eql("0 objects found");
+            result.log.args[0][0].should.eql("total: 0 objects: 0 found");
             result.log.args[1][0].should.eql("No results found");
             done();
         }).otherwise(done);
