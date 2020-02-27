@@ -44,16 +44,16 @@ function help() {
         "Description:".bold + "\n" +
         "   Node-RED command-line client\n\n" +
         "Commands:\n".bold +
-        "   target\n" +
-        "   login\n" +
-        "   list\n" +
-        "   info\n" +
-        "   enable\n" +
-        "   disable\n" +
-        "   search\n" +
-        "   install\n" +
-        "   remove\n" +
-        "   hash-pw\n"
+        "   target  (Set or view the target URL and port like http://localhost:1880)\n" +
+        "   login   (Log user in to the target of the Node-RED admin API)\n" +
+        "   list    (List all of the installed nodes)\n" +
+        "   info    (Display more information about the module or node)\n" +
+        "   enable  (Enable the specified module or node set)\n" +
+        "   disable (Disable the specified module or node set)\n" +
+        "   search  (Search NPM for Node-RED modules relating to the search-term given)\n" +
+        "   install (Install the module from NPM to Node-RED)\n" +
+        "   remove  (Remove the NPM module from Node-RED)\n" +
+        "   hash-pw (creates a hash to use for Node-RED settings like \"adminAuth\")\n"
     ;
     console.log(helpText);
 }
