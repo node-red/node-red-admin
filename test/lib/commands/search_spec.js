@@ -31,24 +31,27 @@ describe("commands/install", function() {
         result.reset();
     });
     
-    
     it('reports no results when none match',function(done) {
-        sinon.stub(httpRequest,"get").yields(null,{statusCode:200},JSON.stringify({rows:[]}));
+        sinon.stub(httpRequest,"get").yields(null,{statusCode:200},JSON.stringify({"objects":[],"total":0,"time":"Thu Feb 27 2020 11:27:22 GMT+0000 (UTC)"}));
         
         command({_:[null,"testnode"]},result).then(function() {
             result.log.called.should.be.true;
-            result.log.args[0][0].should.eql("No results found");
+            result.log.args[0][0].should.eql("0 objects found");
+            result.log.args[1][0].should.eql("No results found");
             done();
         }).otherwise(done);
             
     });
     it('lists matched modules',function(done) {
         sinon.stub(httpRequest,"get").yields(null,{statusCode:200},
-            JSON.stringify({rows:[
-                {key:["node-red","testnode","a random node"]},
-                {key:["node-red","another","a testnode match"]},
-                {key:["node-red","not a match","not a match"]}
-            ]})
+            JSON.stringify({
+                "objects":[
+                    { "package":{"name": "testnode", "description": "a random node", "keywords":["testnode", "node-red", "test"]} },
+                    { "package":{"name": "testnodes", "description": "a random nodes test", "keywords":["testnodes", "node-red", "tests"]} }
+                ],
+                "total":2,
+                "time":"Thu Feb 27 2020 11:27:22 GMT+0000 (UTC)"
+                })
         );
         
         command({_:[null,"testnode"]},result).then(function() {
