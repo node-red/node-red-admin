@@ -50,7 +50,7 @@ function help() {
         "   info    (Display more information about the module or node)\n" +
         "   enable  (Enable the specified module or node set)\n" +
         "   disable (Disable the specified module or node set)\n" +
-        "   search  (Search NPM for Node-RED modules relating to the search-term given)\n" +
+        "   search  (Search NPM for Node-RED modules by matching name, description or keywords with the term)\n" +
         "   install (Install the module from NPM to Node-RED)\n" +
         "   remove  (Remove the NPM module from Node-RED)\n" +
         "   hash-pw (creates a hash to use for Node-RED settings like \"adminAuth\")\n"

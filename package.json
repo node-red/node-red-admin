@@ -1,8 +1,11 @@
 {
     "name": "node-red-admin",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "description": "The Node-RED admin command line interface",
     "homepage": "http://nodered.org",
+    "bugs": {
+        "url": "https://github.com/node-red/node-red-admin/issues/"
+    },
     "license": "Apache-2.0",
     "repository": {
         "type": "git",
