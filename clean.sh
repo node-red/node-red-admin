@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 rm -rf node_modules/
 
 rm package-lock.json
 
-npm i
+npm install
 
 # npm run build
