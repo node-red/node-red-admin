@@ -24,6 +24,9 @@ var request = require("../../../lib/request");
 var result = require("./result_helper");
 
 describe("commands/disable", function() {
+    before(function (){
+        process.env.NR_TRACE = true;
+    })
     afterEach(function() {
         if (request.request.restore) {
             request.request.restore();
