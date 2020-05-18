@@ -54,7 +54,7 @@ describe("commands/list", function() {
 
 
         command({},result).then(function() {
-            requestStub.calledTwice.should.be.true;
+            requestStub.calledTwice.should.be.true();
             requestStub.args[0][0].should.eql("/auth/login");
             requestStub.args[1][0].should.eql("/auth/token");
             requestStub.args[1][1].should.eql({
@@ -63,11 +63,11 @@ describe("commands/list", function() {
             });
 
 
-            config.tokens.calledTwice.should.be.true;
+            config.tokens.calledTwice.should.be.true();
             should.not.exist(config.tokens.args[0][0]);
             config.tokens.args[1][0].should.eql({access_token:"12345"});
 
-            /Logged in/.test(result.log.args[0][0]).should.be.true;
+            /Logged in/.test(result.log.args[0][0]).should.be.true();
 
             done();
         }).otherwise(done);
@@ -78,9 +78,9 @@ describe("commands/list", function() {
         requestStub.onCall(0).returns(when.resolve({type:"unknown"}));
         requestStub.onCall(1).returns(when.resolve({access_token:"12345"}));
         command({},result).then(function() {
-            requestStub.calledOnce.should.be.true;
+            requestStub.calledOnce.should.be.true();
             requestStub.args[0][0].should.eql("/auth/login");
-            /Unsupported login type/.test(result.warn.args[0][0]).should.be.true;
+            /Unsupported login type/.test(result.warn.args[0][0]).should.be.true();
             done();
         }).otherwise(done);
     });
@@ -88,10 +88,10 @@ describe("commands/list", function() {
         var requestStub = sinon.stub(request,"request");
         requestStub.onCall(0).returns(when.resolve({}));
         command({},result).then(function() {
-            requestStub.calledOnce.should.be.true;
+            requestStub.calledOnce.should.be.true();
             requestStub.args[0][0].should.eql("/auth/login");
-            result.log.called.should.be.false;
-            result.warn.called.should.be.false;
+            result.log.called.should.be.false();
+            result.warn.called.should.be.false();
             done();
         }).otherwise(done);
     });
@@ -100,12 +100,12 @@ describe("commands/list", function() {
         requestStub.onCall(0).returns(when.resolve({type:"credentials"}));
         requestStub.onCall(1).returns(when.reject());
         command({},result).then(function() {
-            config.tokens.calledOnce.should.be.true;
+            config.tokens.calledOnce.should.be.true();
             should.not.exist(config.tokens.args[0][0]);
 
-            result.log.called.should.be.false;
-            result.warn.called.should.be.true;
-            /Login failed/.test(result.warn.args[0][0]).should.be.true;
+            result.log.called.should.be.false();
+            result.warn.called.should.be.true();
+            /Login failed/.test(result.warn.args[0][0]).should.be.true();
             done();
         }).otherwise(done);
     });
@@ -114,11 +114,11 @@ describe("commands/list", function() {
         var requestStub = sinon.stub(request,"request");
         requestStub.onCall(0).returns(when.reject());
         command({},result).then(function() {
-            config.tokens.calledOnce.should.be.true;
+            config.tokens.calledOnce.should.be.true();
             should.not.exist(config.tokens.args[0][0]);
-            result.log.called.should.be.false;
-            result.warn.called.should.be.true;
-            /Login failed/.test(result.warn.args[0][0]).should.be.true;
+            result.log.called.should.be.false();
+            result.warn.called.should.be.true();
+            /Login failed/.test(result.warn.args[0][0]).should.be.true();
             done();
         }).otherwise(done);
     });

@@ -49,14 +49,14 @@ describe("commands/enable", function() {
             if (error) {
                 throw error;
             }
-            result.logList.called.should.be.true;
+            result.logList.called.should.be.true();
             done();
         }).otherwise(done);
     });
     
     it('displays command help if node not specified', function(done) {
         command({_:{}},result);
-        result.help.called.should.be.true;
+        result.help.called.should.be.true();
         done();
     });
 });

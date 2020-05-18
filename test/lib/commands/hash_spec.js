@@ -40,7 +40,7 @@ describe("commands/hash-pw", function() {
         });
 
         command({},result).then(function() {
-            result.log.calledOnce.should.be.true;
+            result.log.calledOnce.should.be.true();
             var hash = result.log.firstCall.args[0];
             bcrypt.compare("a-test-password",hash,function(err,match) {
                 match.should.be.true
@@ -54,7 +54,7 @@ describe("commands/hash-pw", function() {
         });
 
         command({},result).then(function() {
-            result.log.called.should.be.false;
+            result.log.called.should.be.false();
             done();
         });
     });
@@ -64,7 +64,7 @@ describe("commands/hash-pw", function() {
         });
 
         command({},result).then(function() {
-            result.log.called.should.be.false;
+            result.log.called.should.be.false();
             done();
         });
     });

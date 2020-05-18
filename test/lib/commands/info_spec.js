@@ -46,7 +46,7 @@ describe("commands/info", function() {
             if (error) {
                 throw error;
             }
-            result.logDetails.called.should.be.true;
+            result.logDetails.called.should.be.true();
             done();
         }).otherwise(done);
     });
@@ -66,8 +66,8 @@ describe("commands/info", function() {
             if (error) {
                 throw error;
             }
-            result.logDetails.called.should.be.false;
-            result.warn.called.should.be.true;
+            result.logDetails.called.should.be.false();
+            result.warn.called.should.be.true();
             result.warn.args[0][0].should.eql("error");
             done();
         }).otherwise(done);
@@ -75,7 +75,7 @@ describe("commands/info", function() {
     
     it('displays command help if node not specified', function(done) {
         command({_:{}},result);
-        result.help.called.should.be.true;
+        result.help.called.should.be.true();
         done();
     });
         

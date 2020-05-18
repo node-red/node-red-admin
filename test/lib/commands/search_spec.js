@@ -66,7 +66,7 @@ describe("commands/install", function() {
         sinon.stub(httpRequest,"get").yields("testError",{statusCode:200},JSON.stringify({rows:[]}));
 
         command({_:[null,"testnode"]},result).then(function() {
-            result.log.called.should.be.false;
+            result.log.called.should.be.false();
             result.warn.called.should.be.true();
             result.warn.args[0][0].should.eql("testError");
             done();
@@ -78,7 +78,7 @@ describe("commands/install", function() {
         sinon.stub(httpRequest,"get").yields(null,{statusCode:101},"testError");
 
         command({_:[null,"testnode"]},result).then(function() {
-            result.log.called.should.be.false;
+            result.log.called.should.be.false();
             result.warn.called.should.be.true();
             result.warn.args[0][0].should.eql("101: testError");
             done();

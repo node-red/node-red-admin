@@ -44,7 +44,7 @@ describe("commands/list", function() {
             if (error) {
                 throw error;
             }
-            result.logNodeList.called.should.be.true;
+            result.logNodeList.called.should.be.true();
             done();
         }).otherwise(done);
     });
