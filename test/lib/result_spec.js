@@ -24,12 +24,6 @@ var result = require("../../lib/result");
  */
 
 describe("lib/result", function() {
-    before(function() {
-    })
-    after(function() {
-        console.log = console._log;
-        console.warn = console._warn;
-    })
     it("log",function() {
         result.log("msg");
     });
