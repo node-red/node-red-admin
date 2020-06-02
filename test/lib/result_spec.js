@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 IBM Corp.
+ * Copyright OpenJS Foundation and other contributors, https://openjsf.org/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,19 @@
 var result = require("../../lib/result");
 
 /**
- * This is a very lazy set of tests. They simply invoke the api with no chacking
+ * This is a very lazy set of tests. They simply invoke the api with no checking
  * of the results.
  * Individual commands already verify they return the correct data to this module.
  * The exact format of the command output is not finalised.
  */
 
-describe("lib/request", function() {
+describe("lib/result", function() {
+    before(function() {
+    })
+    after(function() {
+        console.log = console._log;
+        console.warn = console._warn;
+    })
     it("log",function() {
         result.log("msg");
     });

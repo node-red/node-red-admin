@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 IBM Corp.
+ * Copyright OpenJS Foundation and other contributors, https://openjsf.org/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ describe("commands/install", function() {
         }
         result.reset();
     });
-    
+
     it('installs a node', function(done) {
         var error;
         sinon.stub(request,"request",function(path,opts) {
@@ -38,7 +38,7 @@ describe("commands/install", function() {
                 should(path).be.eql("/nodes");
                 opts.should.eql({
                     method:"POST",
-                    body:'{"module":"testnode"}'
+                    data:{"module":"testnode"}
                 });
             } catch(err) {
                 error = err;
@@ -53,7 +53,7 @@ describe("commands/install", function() {
             done();
         }).otherwise(done);
     });
-    
+
     it('displays command help if node not specified', function(done) {
         command({_:{}},result);
         result.help.called.should.be.true();

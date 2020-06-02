@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 IBM Corp.
+ * Copyright OpenJS Foundation and other contributors, https://openjsf.org/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@ var prompt = require("../../../lib/prompt");
 
 var should = require("should");
 var sinon = require("sinon");
-var when = require("when");
-
 
 var request = require("../../../lib/request");
 var config = require("../../../lib/config");
@@ -49,8 +47,8 @@ describe("commands/list", function() {
 
     it('logs in user', function(done) {
         var requestStub = sinon.stub(request,"request");
-        requestStub.onCall(0).returns(when.resolve({type:"credentials"}));
-        requestStub.onCall(1).returns(when.resolve({access_token:"12345"}));
+        requestStub.onCall(0).returns(Promise.resolve({type:"credentials"}));
+        requestStub.onCall(1).returns(Promise.resolve({access_token:"12345"}));
 
 
         command({},result).then(function() {
@@ -59,7 +57,7 @@ describe("commands/list", function() {
             requestStub.args[1][0].should.eql("/auth/token");
             requestStub.args[1][1].should.eql({
                 method:"POST",
-                body:'{"client_id":"node-red-admin","grant_type":"password","scope":"*","username":"username","password":"password"}'
+                data:{"client_id":"node-red-admin","grant_type":"password","scope":"*","username":"username","password":"password"}
             });
 
 
@@ -70,35 +68,35 @@ describe("commands/list", function() {
             /Logged in/.test(result.log.args[0][0]).should.be.true();
 
             done();
-        }).otherwise(done);
+        }).catch(done);
     });
 
     it('handles unsupported login type', function(done) {
         var requestStub = sinon.stub(request,"request");
-        requestStub.onCall(0).returns(when.resolve({type:"unknown"}));
-        requestStub.onCall(1).returns(when.resolve({access_token:"12345"}));
+        requestStub.onCall(0).returns(Promise.resolve({type:"unknown"}));
+        requestStub.onCall(1).returns(Promise.resolve({access_token:"12345"}));
         command({},result).then(function() {
             requestStub.calledOnce.should.be.true();
             requestStub.args[0][0].should.eql("/auth/login");
             /Unsupported login type/.test(result.warn.args[0][0]).should.be.true();
             done();
-        }).otherwise(done);
+        }).catch(done);
     });
     it('handles no authentication', function(done) {
         var requestStub = sinon.stub(request,"request");
-        requestStub.onCall(0).returns(when.resolve({}));
+        requestStub.onCall(0).returns(Promise.resolve({}));
         command({},result).then(function() {
             requestStub.calledOnce.should.be.true();
             requestStub.args[0][0].should.eql("/auth/login");
             result.log.called.should.be.false();
             result.warn.called.should.be.false();
             done();
-        }).otherwise(done);
+        }).catch(done);
     });
     it('handles login failure', function(done) {
         var requestStub = sinon.stub(request,"request");
-        requestStub.onCall(0).returns(when.resolve({type:"credentials"}));
-        requestStub.onCall(1).returns(when.reject());
+        requestStub.onCall(0).returns(Promise.resolve({type:"credentials"}));
+        requestStub.onCall(1).returns(Promise.reject());
         command({},result).then(function() {
             config.tokens.calledOnce.should.be.true();
             should.not.exist(config.tokens.args[0][0]);
@@ -107,12 +105,12 @@ describe("commands/list", function() {
             result.warn.called.should.be.true();
             /Login failed/.test(result.warn.args[0][0]).should.be.true();
             done();
-        }).otherwise(done);
+        }).catch(done);
     });
 
     it('handles unexpected error', function(done) {
         var requestStub = sinon.stub(request,"request");
-        requestStub.onCall(0).returns(when.reject());
+        requestStub.onCall(0).returns(Promise.reject());
         command({},result).then(function() {
             config.tokens.calledOnce.should.be.true();
             should.not.exist(config.tokens.args[0][0]);
@@ -120,7 +118,7 @@ describe("commands/list", function() {
             result.warn.called.should.be.true();
             /Login failed/.test(result.warn.args[0][0]).should.be.true();
             done();
-        }).otherwise(done);
+        }).catch(done);
     });
 
 

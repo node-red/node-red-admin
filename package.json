@@ -1,6 +1,6 @@
 {
     "name": "node-red-admin",
-    "version": "0.1.8",
+    "version": "0.2.0",
     "description": "The Node-RED admin command line interface",
     "homepage": "http://nodered.org",
     "bugs": {
@@ -12,7 +12,7 @@
         "url": "https://github.com/node-red/node-red-admin.git"
     },
     "engines": {
-        "node": ">=0.10"
+        "node": ">=8"
     },
     "contributors": [
         {
@@ -32,8 +32,7 @@
         "colors": "^1.4.0",
         "minimist": "^1.2.5",
         "read": "^1.0.7",
-        "request": "^2.88.0",
-        "when": "^3.7.8"
+        "axios": "0.19.2"
     },
     "devDependencies": {
         "grunt": "^1.0.4",
@@ -42,10 +41,10 @@
         "grunt-simple-mocha": "^0.4.1",
         "mocha": "^7.1.0",
         "should": "^13.2.3",
-        "sinon": "^1.17.7"
+        "sinon": "1.17.7"
     },
     "optionalDependencies": {
-        "bcrypt": "^3.0.8"
+        "bcrypt": "3.0.8"
     },
     "bin": {
         "node-red-admin": "node-red-admin.js"

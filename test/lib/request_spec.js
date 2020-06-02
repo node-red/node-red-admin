@@ -1,5 +1,5 @@
 /**
- * Copyright 2014 IBM Corp.
+ * Copyright OpenJS Foundation and other contributors, https://openjsf.org/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 var should = require("should");
 var sinon = require("sinon");
 var fs = require("fs");
-var request = require("request");
+var request = require("axios");
 
 var api = require("../../lib/request");
 var config = require("../../lib/config");
@@ -32,28 +32,28 @@ describe("lib/request", function() {
         config.target.restore();
         config.tokens.restore();
     });
-    
+
     it('uses config.target for base path', function(done) {
-        sinon.stub(request, 'get').yields(null, {statusCode:200}, JSON.stringify({a: "b"}));
+        sinon.stub(request, 'get').returns(Promise.resolve({status: 200}));
 
         api.request("/foo",{}).then(function(res) {
             try {
-                request.get.args[0][0].headers.should.not.have.a.property("Authorization");
-                request.get.args[0][0].url.should.eql("http://example.com/target/foo");
+                request.get.args[0][0].should.eql("http://example.com/target/foo");
+                request.get.args[0][1].headers.should.not.have.a.property("Authorization");
                 done();
             } catch(err) {
                 done(err);
             } finally {
                 request.get.restore();
             }
-        }).otherwise(function(err) {
+        }).catch(function(err) {
             request.get.restore();
             done(err);
         });
     });
-    
+
     it('returns the json response to a get', function(done) {
-        sinon.stub(request, 'get').yields(null, {statusCode:200}, JSON.stringify({a: "b"}));
+        sinon.stub(request, 'get').returns(Promise.resolve({status:200, data: {a:"b"}}))
 
         api.request("/foo",{}).then(function(res) {
             try {
@@ -64,14 +64,14 @@ describe("lib/request", function() {
             } finally {
                 request.get.restore();
             }
-        }).otherwise(function(err) {
+        }).catch(function(err) {
             request.get.restore();
             done(err);
         });
     });
 
     it('returns the json response to a put', function(done) {
-        sinon.stub(request, 'put').yields(null, {statusCode:200}, JSON.stringify({a: "b"}));
+        sinon.stub(request, 'put').returns(Promise.resolve({status:200, data: {a:"b"}}))
 
         api.request("/nodes/node",{method: "PUT"}).then(function(res) {
             try {
@@ -82,14 +82,14 @@ describe("lib/request", function() {
             } finally {
                 request.put.restore();
             }
-        }).otherwise(function(err) {
+        }).catch(function(err) {
             request.put.restore();
             done(err);
         });
     });
 
     it('returns the json response to a post', function(done) {
-        sinon.stub(request, 'post').yields(null, {statusCode:200}, JSON.stringify({a: "b"}));
+        sinon.stub(request, 'post').returns(Promise.resolve({status:200, data: {a:"b"}}))
 
         api.request("/nodes",{method: "POST"}).then(function(res) {
             try {
@@ -100,34 +100,36 @@ describe("lib/request", function() {
             } finally {
                 request.post.restore();
             }
-        }).otherwise(function(err) {
+        }).catch(function(err) {
             request.post.restore();
             done(err);
         });
     });
 
     it('returns to a delete', function(done) {
-        sinon.stub(request, 'del').yields(null, {statusCode:204});
+        sinon.stub(request, 'delete').returns(Promise.resolve({status:200, data: {a:"b"}}))
 
         api.request("/nodes/plugin",{method: "DELETE"}).then(function() {
-            request.del.restore();
+            request.delete.restore();
             done();
-        }).otherwise(function(err) {
-            request.del.restore();
+        }).catch(function(err) {
+            request.delete.restore();
             done(err);
         });
     });
-    
-    
+
+
     it('rejects unauthorised', function(done) {
-        sinon.stub(request, 'get').yields(null, {statusCode:401});
+        var rejection = Promise.reject({status:401});
+        rejection.catch(()=>{});
+        sinon.stub(request, 'get').returns(rejection)
 
         api.request("/nodes/plugin",{}).then(function() {
             request.get.restore();
             done(new Error("Unauthorised response not rejected"));
-        }).otherwise(function(err) {
+        }).catch(function(err) {
             try {
-                err.should.eql(401);
+                err.status.should.eql(401);
                 done();
             } catch(err) {
                 done(err);
@@ -136,16 +138,19 @@ describe("lib/request", function() {
             }
         });
     });
-    
+
     it('rejects error', function(done) {
-        sinon.stub(request, 'get').yields(new Error("test error"), {statusCode:401});
+        var rejection = Promise.reject({status:400,data:{message:"test error"}});
+        rejection.catch(()=>{});
+        sinon.stub(request, 'get').returns(rejection)
 
         api.request("/nodes/plugin",{}).then(function() {
             request.get.restore();
             done(new Error("Unauthorised response not rejected"));
-        }).otherwise(function(err) {
+        }).catch(function(err) {
             try {
-                err.should.eql("Error: test error");
+                err.status.should.eql(400);
+                err.data.message.should.eql("test error")
                 done();
             } catch(err) {
                 done(err);
@@ -154,17 +159,17 @@ describe("lib/request", function() {
             }
         });
     });
-    
-    
+
+
     it('returns unexpected status', function(done) {
-        sinon.stub(request, 'get').yields(null, {statusCode:101},"response");
+        sinon.stub(request, 'get').returns(Promise.resolve({status:101, data: "response"}))
 
         api.request("/nodes/plugin",{}).then(function() {
             request.get.restore();
             done(new Error("Unexpected status not logged"));
-        }).otherwise(function(err) {
+        }).catch(function(err) {
             try {
-                err.should.eql("101: response");
+                err.message.should.eql("101: response");
                 done();
             } catch(err) {
                 done(err);
@@ -173,16 +178,16 @@ describe("lib/request", function() {
             }
         });
     });
-    
+
     it('returns server message', function(done) {
-        sinon.stub(request, 'get').yields(null, {statusCode:101},'{"message":"server response"}');
+        sinon.stub(request, 'get').returns(Promise.resolve({status:101, data: {"message":"server response"}}))
 
         api.request("/nodes/plugin",{}).then(function() {
             request.get.restore();
             done(new Error("Unexpected status not logged"));
-        }).otherwise(function(err) {
+        }).catch(function(err) {
             try {
-                err.should.eql("101: server response");
+                err.message.should.eql("101: server response");
                 done();
             } catch(err) {
                 done(err);
@@ -191,32 +196,32 @@ describe("lib/request", function() {
             }
         });
     });
-    
+
     it('attaches authorization header if token available', function(done) {
-        sinon.stub(request, 'get').yields(null, {statusCode:200}, JSON.stringify({a: "b"}));
+        sinon.stub(request, 'get').returns(Promise.resolve({status: 200,data:{a:"b"}}));
         config.tokens.restore();
         sinon.stub(config,"tokens",function() { return {access_token:"123456"}});
-        
+
         api.request("/foo",{}).then(function(res) {
             try {
                 res.should.eql({a:"b"});
-                request.get.args[0][0].headers.should.have.a.property("Authorization","Bearer 123456");
+                request.get.args[0][1].headers.should.have.a.property("Authorization","Bearer 123456");
                 done();
             } catch(err) {
                 done(err);
             } finally {
                 request.get.restore();
             }
-        }).otherwise(function(err) {
+        }).catch(function(err) {
             request.get.restore();
             done(err);
         });
 
     });
-    
-    
+
+
     it('logs output if NR_TRACE is set', function(done) {
-        sinon.stub(request, 'get').yields(null, {statusCode:200}, JSON.stringify({a: "b"}));
+        sinon.stub(request, 'get').returns(Promise.resolve({status: 200,data:{a:"b"}}));
         sinon.stub(console, 'log');
         process.env.NR_TRACE = true;
         api.request("/foo",{}).then(function(res) {
@@ -232,7 +237,7 @@ describe("lib/request", function() {
                 delete process.env.NR_TRACE;
                 request.get.restore();
             }
-        }).otherwise(function(err) {
+        }).catch(function(err) {
             delete process.env.NR_TRACE;
             console.log.restore();
             request.get.restore();

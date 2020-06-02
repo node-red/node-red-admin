@@ -1,5 +1,5 @@
 /**
- * Copyright 2013, 2014 IBM Corp.
+ * Copyright OpenJS Foundation and other contributors, https://openjsf.org/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ module.exports = function(grunt) {
             jshint: {
                 options: {
                     // http://www.jshint.com/docs/options/
+                    esversion: 6,
                     "curly": true,    // require braces
                     "eqnull": true,   // ignore ==null
                     "forin": true,    // require property filtering in "for in" loops

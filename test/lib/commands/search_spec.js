@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 IBM Corp.
+ * Copyright OpenJS Foundation and other contributors, https://openjsf.org/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,8 @@ var command = require("../../../lib/commands/search");
 
 var should = require("should");
 var sinon = require("sinon");
-var when = require("when");
 
-var httpRequest = require("request");
+var httpRequest = require("axios");
 var result = require("./result_helper");
 
 describe("commands/install", function() {
@@ -32,25 +31,23 @@ describe("commands/install", function() {
     });
 
     it('reports no results when none match',function(done) {
-        sinon.stub(httpRequest,"get").yields(null,{statusCode:200},JSON.stringify({"data":[]} ));
+        sinon.stub(httpRequest,"get").returns(Promise.resolve({status:200,data:{"data":[]}}));
 
         command({_:[null,"testnode"]},result).then(function() {
             result.log.called.should.be.true();
             result.log.args[0][0].should.eql("No results found");
             done();
-        }).otherwise(done);
+        }).catch(done);
 
     });
     it('lists results ordered by relevance',function(done) {
-        sinon.stub(httpRequest,"get").yields(null,{statusCode:200},
-            JSON.stringify({
-                "data":[
-                    { "name":"another-node", "description":"a testnode - THREE" },
-                    { "name":"testnode", "description":"a test node - ONE" },
-                    { "name":"@scoped/testnode", "description":"once more - TWO" }
-                ]
-                })
-        );
+        sinon.stub(httpRequest,"get").returns(Promise.resolve({status:200,data:{
+            "data":[
+                { "name":"another-node", "description":"a testnode - THREE" },
+                { "name":"testnode", "description":"a test node - ONE" },
+                { "name":"@scoped/testnode", "description":"once more - TWO" }
+            ]
+            }}));
 
         command({_:[null,"testnode"]},result).then(function() {
             result.log.args.length.should.equal(3);
@@ -58,31 +55,19 @@ describe("commands/install", function() {
             /TWO/.test(result.log.args[1][0]).should.be.true();
             /THREE/.test(result.log.args[2][0]).should.be.true();
             done();
-        }).otherwise(done);
-
-    });
-
-    it('reports error response',function(done) {
-        sinon.stub(httpRequest,"get").yields("testError",{statusCode:200},JSON.stringify({rows:[]}));
-
-        command({_:[null,"testnode"]},result).then(function() {
-            result.log.called.should.be.false();
-            result.warn.called.should.be.true();
-            result.warn.args[0][0].should.eql("testError");
-            done();
-        }).otherwise(done);
+        }).catch(done);
 
     });
 
     it('reports unexpected http response',function(done) {
-        sinon.stub(httpRequest,"get").yields(null,{statusCode:101},"testError");
+        sinon.stub(httpRequest,"get").returns(Promise.resolve({status:101,data:"testError"}));
 
         command({_:[null,"testnode"]},result).then(function() {
             result.log.called.should.be.false();
             result.warn.called.should.be.true();
             result.warn.args[0][0].should.eql("101: testError");
             done();
-        }).otherwise(done);
+        }).catch(done);
     });
 
     it('displays command help if node not specified', function(done) {

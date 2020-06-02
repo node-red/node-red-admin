@@ -1,5 +1,5 @@
 /**
- * Copyright 2015 IBM Corp.
+ * Copyright OpenJS Foundation and other contributors, https://openjsf.org/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ describe("commands/enable", function() {
         }
         result.reset();
     });
-    
+
     it('enables a node', function(done) {
         var error;
         sinon.stub(request,"request",function(path,opts) {
@@ -38,7 +38,7 @@ describe("commands/enable", function() {
                 should(path).be.eql("/nodes/testnode");
                 opts.should.eql({
                     method:"PUT",
-                    body:'{"enabled":true}'
+                    data:{"enabled":true}
                 });
             } catch(err) {
                 error = err;
@@ -53,7 +53,7 @@ describe("commands/enable", function() {
             done();
         }).otherwise(done);
     });
-    
+
     it('displays command help if node not specified', function(done) {
         command({_:{}},result);
         result.help.called.should.be.true();
