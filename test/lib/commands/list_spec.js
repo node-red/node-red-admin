@@ -18,8 +18,6 @@ var command = require("../../../lib/commands/list");
 
 var should = require("should");
 var sinon = require("sinon");
-var when = require("when");
-
 var request = require("../../../lib/request");
 var result = require("./result_helper");
 
@@ -28,7 +26,7 @@ describe("commands/list", function() {
         request.request.restore();
         result.reset();
     });
-    
+
     it('lists all nodes', function(done) {
         var error;
         sinon.stub(request,"request",function(path,opts) {
@@ -48,5 +46,5 @@ describe("commands/list", function() {
             done();
         }).catch(done);
     });
-        
+
 });
