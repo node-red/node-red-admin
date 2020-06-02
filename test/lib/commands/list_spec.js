@@ -38,7 +38,7 @@ describe("commands/list", function() {
             } catch(err) {
                 error = err;
             }
-            return when.resolve([]);
+            return Promise.resolve([]);
         });
         command({},result).then(function() {
             if (error) {
@@ -46,7 +46,7 @@ describe("commands/list", function() {
             }
             result.logNodeList.called.should.be.true();
             done();
-        }).otherwise(done);
+        }).catch(done);
     });
         
 });

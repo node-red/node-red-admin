@@ -18,7 +18,6 @@ var command = require("../../../lib/commands/enable");
 
 var should = require("should");
 var sinon = require("sinon");
-var when = require("when");
 
 var request = require("../../../lib/request");
 var result = require("./result_helper");
@@ -43,7 +42,7 @@ describe("commands/enable", function() {
             } catch(err) {
                 error = err;
             }
-            return when.resolve([]);
+            return Promise.resolve([]);
         });
         command({_:[null,"testnode"]},result).then(function() {
             if (error) {
@@ -51,7 +50,7 @@ describe("commands/enable", function() {
             }
             result.logList.called.should.be.true();
             done();
-        }).otherwise(done);
+        }).catch(done);
     });
 
     it('displays command help if node not specified', function(done) {

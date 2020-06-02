@@ -18,7 +18,6 @@ var command = require("../../../lib/commands/remove");
 
 var should = require("should");
 var sinon = require("sinon");
-var when = require("when");
 
 var request = require("../../../lib/request");
 var result = require("./result_helper");
@@ -30,7 +29,7 @@ describe("commands/remove", function() {
         }
         result.reset();
     });
-    
+
     it('removes a node', function(done) {
         var error;
         sinon.stub(request,"request",function(path,opts) {
@@ -42,7 +41,7 @@ describe("commands/remove", function() {
             } catch(err) {
                 error = err;
             }
-            return when.resolve([]);
+            return Promise.resolve([]);
         });
         command({_:[null,"testnode"]},result).then(function() {
             if (error) {
@@ -50,9 +49,9 @@ describe("commands/remove", function() {
             }
             result.log.called.should.be.true();
             done();
-        }).otherwise(done);
+        }).catch(done);
     });
-    
+
     it('displays command help if node not specified', function(done) {
         command({_:{}},result);
         result.help.called.should.be.true();

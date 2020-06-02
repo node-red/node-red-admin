@@ -24,7 +24,7 @@ module.exports = {
     logList: sinon.spy(),
     logNodeList: sinon.spy(),
     logDetails: sinon.spy(),
-    
+
     reset: function() {
         module.exports.log.reset();
         module.exports.warn.reset();

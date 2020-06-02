@@ -18,7 +18,6 @@ var command = require("../../../lib/commands/info");
 
 var should = require("should");
 var sinon = require("sinon");
-var when = require("when");
 
 var request = require("../../../lib/request");
 var result = require("./result_helper");
@@ -30,7 +29,7 @@ describe("commands/info", function() {
         }
         result.reset();
     });
-    
+
     it('displays information on a module', function(done) {
         var error;
         sinon.stub(request,"request",function(path,opts) {
@@ -40,7 +39,7 @@ describe("commands/info", function() {
             } catch(err) {
                 error = err;
             }
-            return when.resolve([]);
+            return Promise.resolve([]);
         });
         command({_:[null,"testnode"]},result).then(function() {
             if (error) {
@@ -48,9 +47,9 @@ describe("commands/info", function() {
             }
             result.logDetails.called.should.be.true();
             done();
-        }).otherwise(done);
+        }).catch(done);
     });
-    
+
     it('reports error', function(done) {
         var error;
         sinon.stub(request,"request",function(path,opts) {
@@ -60,7 +59,7 @@ describe("commands/info", function() {
             } catch(err) {
                 error = err;
             }
-            return when.reject("error");
+            return Promise.reject("error");
         });
         command({_:[null,"testnode"]},result).then(function() {
             if (error) {
@@ -70,13 +69,13 @@ describe("commands/info", function() {
             result.warn.called.should.be.true();
             result.warn.args[0][0].should.eql("error");
             done();
-        }).otherwise(done);
+        }).catch(done);
     });
-    
+
     it('displays command help if node not specified', function(done) {
         command({_:{}},result);
         result.help.called.should.be.true();
         done();
     });
-        
+
 });

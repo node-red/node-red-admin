@@ -20,7 +20,6 @@ var prompt = require("../../../lib/prompt");
 
 var should = require("should");
 var sinon = require("sinon");
-var when = require("when");
 
 
 var request = require("../../../lib/request");

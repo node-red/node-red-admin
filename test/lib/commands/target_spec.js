@@ -18,7 +18,6 @@ var command = require("../../../lib/commands/target");
 
 var should = require("should");
 var sinon = require("sinon");
-var when = require("when");
 
 var config = require("../../../lib/config");
 
@@ -36,7 +35,7 @@ describe("commands/target", function() {
         result.reset();
         config.target.restore();
     });
-    
+
     it('queries the target', function(done) {
         command({_:[]},result);
         config.target.called.should.be.true();
@@ -45,7 +44,7 @@ describe("commands/target", function() {
         /http\:\/\/test\.example\.com/.test(result.log.args[0][0]).should.be.true();
         done();
     });
-    
+
     it('sets the target', function(done) {
         command({_:[null,"http://newtarget.example.com"]},result);
         config.target.called.should.be.true();
@@ -54,7 +53,7 @@ describe("commands/target", function() {
         /http\:\/\/newtarget\.example\.com/.test(result.log.args[0][0]).should.be.true();
         done();
     });
-    
+
     it('rejects non http targets', function(done) {
         command({_:[null,"ftp://newtarget.example.com"]},result);
         config.target.called.should.be.false();
@@ -67,8 +66,8 @@ describe("commands/target", function() {
         config.target.args[0][0].should.eql("http://newtarget.example.com");
         done();
     });
-    
-    
-    
-        
+
+
+
+
 });
