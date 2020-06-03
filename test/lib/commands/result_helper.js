@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  **/
-var colors = require("colors");
 var sinon = require("sinon");
 var result = require("../../../lib/result");
 
