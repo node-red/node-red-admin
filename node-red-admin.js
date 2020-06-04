@@ -15,4 +15,6 @@
  * limitations under the License.
  **/
 
-require("./lib/index.js")(process.argv.slice(2));
+require("./lib/index.js")(process.argv.slice(2)).catch(err => {
+    process.exit(1);
+});

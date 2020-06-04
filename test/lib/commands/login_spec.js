@@ -51,7 +51,7 @@ describe("commands/list", function() {
         requestStub.onCall(1).returns(Promise.resolve({access_token:"12345"}));
 
 
-        command({},result).then(function() {
+        command({},result).then(() => {
             requestStub.calledTwice.should.be.true();
             requestStub.args[0][0].should.eql("/auth/login");
             requestStub.args[1][0].should.eql("/auth/token");
@@ -75,17 +75,17 @@ describe("commands/list", function() {
         var requestStub = sinon.stub(request,"request");
         requestStub.onCall(0).returns(Promise.resolve({type:"unknown"}));
         requestStub.onCall(1).returns(Promise.resolve({access_token:"12345"}));
-        command({},result).then(function() {
-            requestStub.calledOnce.should.be.true();
-            requestStub.args[0][0].should.eql("/auth/login");
-            /Unsupported login type/.test(result.warn.args[0][0]).should.be.true();
+        command({},result).then(() => {
+            done("Should not have resolved with unsupported login type")
+        }).catch(err => {
+            /Unsupported login type/.test(err).should.be.true();
             done();
         }).catch(done);
     });
     it('handles no authentication', function(done) {
         var requestStub = sinon.stub(request,"request");
         requestStub.onCall(0).returns(Promise.resolve({}));
-        command({},result).then(function() {
+        command({},result).then(() => {
             requestStub.calledOnce.should.be.true();
             requestStub.args[0][0].should.eql("/auth/login");
             result.log.called.should.be.false();
@@ -97,26 +97,25 @@ describe("commands/list", function() {
         var requestStub = sinon.stub(request,"request");
         requestStub.onCall(0).returns(Promise.resolve({type:"credentials"}));
         requestStub.onCall(1).returns(Promise.reject());
-        command({},result).then(function() {
+        command({},result).then(() => {
+            done("Should not have resolved with login failure");
+        }).catch(err => {
             config.tokens.calledOnce.should.be.true();
             should.not.exist(config.tokens.args[0][0]);
-
-            result.log.called.should.be.false();
-            result.warn.called.should.be.true();
-            /Login failed/.test(result.warn.args[0][0]).should.be.true();
+            /Login failed/.test(err).should.be.true();
             done();
         }).catch(done);
     });
 
     it('handles unexpected error', function(done) {
         var requestStub = sinon.stub(request,"request");
-        requestStub.onCall(0).returns(Promise.reject());
-        command({},result).then(function() {
+        requestStub.onCall(0).returns(Promise.reject("fail"));
+        command({},result).then(() => {
+            done("Should not have resolved with login failure");
+        }).catch(err => {
             config.tokens.calledOnce.should.be.true();
             should.not.exist(config.tokens.args[0][0]);
-            result.log.called.should.be.false();
-            result.warn.called.should.be.true();
-            /Login failed/.test(result.warn.args[0][0]).should.be.true();
+            /fail/.test(err).should.be.true();
             done();
         }).catch(done);
     });

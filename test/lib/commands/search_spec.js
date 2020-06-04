@@ -63,9 +63,10 @@ describe("commands/install", function() {
         sinon.stub(httpRequest,"get").returns(Promise.resolve({status:101,data:"testError"}));
 
         command({_:[null,"testnode"]},result).then(function() {
+            done("Should not have resolved")
+        }).catch(err => {
             result.log.called.should.be.false();
-            result.warn.called.should.be.true();
-            result.warn.args[0][0].should.eql("101: testError");
+            /101: testError/.test(err).should.be.true();
             done();
         }).catch(done);
     });

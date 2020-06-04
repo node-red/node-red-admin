@@ -62,14 +62,8 @@ describe("commands/info", function() {
             return Promise.reject("error");
         });
         command({_:[null,"testnode"]},result).then(function() {
-            if (error) {
-                throw error;
-            }
-            result.logDetails.called.should.be.false();
-            result.warn.called.should.be.true();
-            result.warn.args[0][0].should.eql("error");
-            done();
-        }).catch(done);
+            done("Should have returned the error");
+        }).catch(err => { done() });
     });
 
     it('displays command help if node not specified', function(done) {
