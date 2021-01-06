@@ -1,6 +1,6 @@
 {
     "name": "node-red-admin",
-    "version": "0.2.6",
+    "version": "0.3.0",
     "description": "The Node-RED admin command line interface",
     "homepage": "http://nodered.org",
     "bugs": {
@@ -23,21 +23,20 @@
             "name": "Anna Thomas"
         }
     ],
-    "preferGlobal": "true",
     "scripts": {
         "test": "./node_modules/.bin/mocha "
     },
     "dependencies": {
-        "axios": "0.19.2",
+        "axios": "0.21.1",
         "bcryptjs": "^2.4.3",
-        "cli-table": "^0.3.1",
+        "cli-table": "^0.3.4",
         "minimist": "^1.2.5",
         "read": "^1.0.7"
     },
     "devDependencies": {
-        "grunt": "^1.0.4",
+        "grunt": "^1.3.0",
         "grunt-cli": "^1.3.2",
-        "grunt-contrib-jshint": "^2.1.0",
+        "grunt-contrib-jshint": "^3.0.0",
         "grunt-simple-mocha": "^0.4.1",
         "mocha": "^7.1.0",
         "should": "^13.2.3",
