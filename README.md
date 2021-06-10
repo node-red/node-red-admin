@@ -7,6 +7,13 @@ The Node-RED admin command line interface.
 
 A command line tool for remotely administering Node-RED.
 
+It is built into `node-red` and can be run as:
+
+    node-red admin ....
+
+
+## Standalone install
+
 Install this globally to make the `node-red-admin` command available on your path:
 
     npm install -g node-red-admin

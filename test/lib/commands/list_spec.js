@@ -29,7 +29,7 @@ describe("commands/list", function() {
 
     it('lists all nodes', function(done) {
         var error;
-        sinon.stub(request,"request",function(path,opts) {
+        sinon.stub(request,"request").callsFake(function(path,opts) {
             try {
                 should(path).be.eql("/nodes");
                 opts.should.eql({});

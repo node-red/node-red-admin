@@ -25,11 +25,11 @@ module.exports = {
     logDetails: sinon.spy(),
 
     reset: function() {
-        module.exports.log.reset();
-        module.exports.warn.reset();
-        module.exports.help.reset();
-        module.exports.logList.reset();
-        module.exports.logNodeList.reset();
-        module.exports.logDetails.reset();
+        module.exports.log.resetHistory();
+        module.exports.warn.resetHistory();
+        module.exports.help.resetHistory();
+        module.exports.logList.resetHistory();
+        module.exports.logNodeList.resetHistory();
+        module.exports.logDetails.resetHistory();
     }
 };

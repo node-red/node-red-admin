@@ -16,6 +16,7 @@
 
 var should = require("should");
 var sinon = require("sinon");
+sinon.test = require("sinon-test")(sinon);
 var fs = require("fs");
 
 var config = require("../../lib/config");
@@ -26,23 +27,23 @@ describe("lib/config", function() {
         config.unload();
     });
     it('loads preferences when target referenced', sinon.test(function() {
-        this.stub(fs,"readFileSync",function() {
+        this.stub(fs,"readFileSync").callsFake(function() {
             return '{"target":"http://example.com:1880"}';
         });
         config.target().should.eql("http://example.com:1880");
     }));
     it('provide default value for target', sinon.test(function() {
-        this.stub(fs,"readFileSync",function() {
+        this.stub(fs,"readFileSync").callsFake(function() {
             return '{}';
         });
         config.target().should.eql("http://localhost:1880");
     }));
-    
+
     it('saves preferences when target set', sinon.test(function() {
-        this.stub(fs,"readFileSync",function() {
+        this.stub(fs,"readFileSync").callsFake(function() {
             return '{"target":"http://another.example.com:1880"}';
         });
-        this.stub(fs,"writeFileSync",function() {});
+        this.stub(fs,"writeFileSync").callsFake(function() {});
 
         config.target().should.eql("http://another.example.com:1880");
         config.target("http://final.example.com:1880");
@@ -52,18 +53,18 @@ describe("lib/config", function() {
         fs.writeFileSync.calledOnce.should.be.true;
 
     }));
-    
+
     it('provide default value for tokens', sinon.test(function() {
-        this.stub(fs,"readFileSync",function() {
+        this.stub(fs,"readFileSync").callsFake(function() {
             return '{}';
         });
         should.not.exist(config.tokens());
     }));
     it('saves preferences when tokens set', sinon.test(function() {
-        this.stub(fs,"readFileSync",function() {
+        this.stub(fs,"readFileSync").callsFake(function() {
             return '{}';
         });
-        this.stub(fs,"writeFileSync",function() {});
+        this.stub(fs,"writeFileSync").callsFake(function() {});
 
         should.not.exist(config.tokens());
         config.tokens({access_token:"123"});
@@ -72,12 +73,12 @@ describe("lib/config", function() {
         fs.readFileSync.calledOnce.should.be.true;
         fs.writeFileSync.calledOnce.should.be.true;
     }));
-    
+
     it('setting preference to null removes it', sinon.test(function() {
-        this.stub(fs,"readFileSync",function() {
+        this.stub(fs,"readFileSync").callsFake(function() {
             return '{"tokens":{"access_token":"123"}}';
         });
-        this.stub(fs,"writeFileSync",function() {});
+        this.stub(fs,"writeFileSync").callsFake(function() {});
 
         config.tokens().should.eql({access_token:"123"});
         config.tokens(null);
@@ -86,5 +87,5 @@ describe("lib/config", function() {
         fs.readFileSync.calledOnce.should.be.true;
         fs.writeFileSync.calledOnce.should.be.true;
     }));
-    
+
 });

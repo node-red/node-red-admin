@@ -27,8 +27,8 @@ var result = require("./result_helper");
 
 describe("commands/list", function() {
     beforeEach(function() {
-        sinon.stub(config,"tokens",function(token) {});
-        sinon.stub(prompt,"read",function(opts,callback) {
+        sinon.stub(config,"tokens").callsFake(function(token) {});
+        sinon.stub(prompt,"read").callsFake(function(opts,callback) {
             if (/Username/.test(opts.prompt)) {
                 callback(null,"username");
             } else if (/Password/.test(opts.prompt)) {

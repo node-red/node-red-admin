@@ -34,7 +34,7 @@ describe("commands/hash-pw", function() {
         prompt.read.restore();
     });
     it('generates a bcrypt hash of provided password',function(done) {
-        sinon.stub(prompt,"read",function(opts,callback) {
+        sinon.stub(prompt,"read").callsFake(function(opts,callback) {
             callback(null,"a-test-password");
         });
 
@@ -48,7 +48,7 @@ describe("commands/hash-pw", function() {
         });
     });
     it('ignores blank password',function(done) {
-        sinon.stub(prompt,"read",function(opts,callback) {
+        sinon.stub(prompt,"read").callsFake(function(opts,callback) {
             callback(null,"");
         });
 
@@ -58,7 +58,7 @@ describe("commands/hash-pw", function() {
         });
     });
     it('ignores null password',function(done) {
-        sinon.stub(prompt,"read",function(opts,callback) {
+        sinon.stub(prompt,"read").callsFake(function(opts,callback) {
             callback(null,null);
         });
 

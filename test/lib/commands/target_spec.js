@@ -27,7 +27,7 @@ describe("commands/target", function() {
     var target;
     beforeEach(function() {
         target = "http://test.example.com";
-        sinon.stub(config,"target", function(arg) {
+        sinon.stub(config,"target").callsFake(function(arg) {
             if (arg) { target = arg } else { return target;}
         });
     });

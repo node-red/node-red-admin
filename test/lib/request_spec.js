@@ -25,8 +25,8 @@ var config = require("../../lib/config");
 describe("lib/request", function() {
     "use strict";
     before(function() {
-        sinon.stub(config,"target",function() { return "http://example.com/target"; });
-        sinon.stub(config,"tokens",function() { return null; });
+        sinon.stub(config,"target").returns("http://example.com/target");
+        sinon.stub(config,"tokens").returns(null);
     });
     after(function() {
         config.target.restore();
@@ -200,7 +200,7 @@ describe("lib/request", function() {
     it('attaches authorization header if token available', function(done) {
         sinon.stub(request, 'get').returns(Promise.resolve({status: 200,data:{a:"b"}}));
         config.tokens.restore();
-        sinon.stub(config,"tokens",function() { return {access_token:"123456"}});
+        sinon.stub(config,"tokens").returns({access_token:"123456"});
 
         api.request("/foo",{}).then(function(res) {
             try {

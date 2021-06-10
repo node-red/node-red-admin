@@ -32,7 +32,7 @@ describe("commands/info", function() {
 
     it('displays information on a module', function(done) {
         var error;
-        sinon.stub(request,"request",function(path,opts) {
+        sinon.stub(request,"request").callsFake(function(path,opts) {
             try {
                 should(path).be.eql("/nodes/testnode");
                 opts.should.eql({});
@@ -52,7 +52,7 @@ describe("commands/info", function() {
 
     it('reports error', function(done) {
         var error;
-        sinon.stub(request,"request",function(path,opts) {
+        sinon.stub(request,"request").callsFake(function(path,opts) {
             try {
                 should(path).be.eql("/nodes/testnode");
                 opts.should.eql({});

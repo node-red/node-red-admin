@@ -32,7 +32,7 @@ describe("commands/disable", function() {
 
     it('disables a node', function(done) {
         var error;
-        sinon.stub(request,"request",function(path,opts) {
+        sinon.stub(request,"request").callsFake(function(path,opts) {
             try {
                 should(path).be.eql("/nodes/testnode");
                 opts.should.eql({
