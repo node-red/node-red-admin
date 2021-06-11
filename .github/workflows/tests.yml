@@ -15,10 +15,6 @@ jobs:
     strategy:
       matrix:
         node-version: [12, 14, 16]
-        include:
-            - node: 14
-              reportCoverage: true
-
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
@@ -32,12 +28,7 @@ jobs:
         npm run test
         npm run coverage
     - name: Publish to coveralls.io
-      if: ${{ matrix.reportCoverage }}
-      env:
-          BLAH: ${{ matrix.reportCoverage }}
-      run: echo Reporting coverage $BLAH
-    - name: Publish to coveralls.io
-      if: ${{ matrix.reportCoverage }}
+      if: ${{ matrix.node == 14 }}
       uses: coverallsapp/github-action@v1.1.2
       with:
         github-token: ${{ github.token }}
