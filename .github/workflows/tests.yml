@@ -14,7 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [12, 14, 16]
+        include:
+            - node: 14
+              reportCoverage: true
 
     steps:
     - uses: actions/checkout@v2
@@ -29,6 +32,7 @@ jobs:
         npm run test
         npm run coverage
     - name: Publish to coveralls.io
+      if: ${{ matrix.reportCoverage }}
       uses: coverallsapp/github-action@v1.1.2
       with:
         github-token: ${{ github.token }}
