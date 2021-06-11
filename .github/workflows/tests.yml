@@ -33,6 +33,11 @@ jobs:
         npm run coverage
     - name: Publish to coveralls.io
       if: ${{ matrix.reportCoverage }}
+      env:
+          BLAH: ${{ matrix.reportCoverage }}
+      run: echo Reporting coverage $BLAH
+    - name: Publish to coveralls.io
+      if: ${{ matrix.reportCoverage }}
       uses: coverallsapp/github-action@v1.1.2
       with:
         github-token: ${{ github.token }}
