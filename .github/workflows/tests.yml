@@ -23,9 +23,9 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - name: Install Dependencies
-    - run: npm install
+      run: npm install
     - name: Run tests
-    - run: |
+      run: |
         npm run test
         npm run coverage
     - name: Publish to coveralls.io
