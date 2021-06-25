@@ -28,11 +28,13 @@
         "coverage": "nyc report --reporter=lcov"
     },
     "dependencies": {
+        "ansi-colors": "^4.1.1",
         "axios": "0.21.1",
         "bcryptjs": "^2.4.3",
         "cli-table": "^0.3.4",
-        "inquirer": "^8.1.0",
+        "enquirer": "^2.3.6",
         "minimist": "^1.2.5",
+        "mustache": "^4.2.0",
         "read": "^1.0.7"
     },
     "devDependencies": {
