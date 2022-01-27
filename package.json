@@ -1,6 +1,6 @@
 {
     "name": "node-red-admin",
-    "version": "2.2.1",
+    "version": "2.2.2",
     "description": "The Node-RED admin command line interface",
     "homepage": "http://nodered.org",
     "bugs": {
@@ -29,9 +29,9 @@
     },
     "dependencies": {
         "ansi-colors": "^4.1.1",
-        "axios": "0.22.0",
+        "axios": "0.25.0",
         "bcryptjs": "^2.4.3",
-        "cli-table": "^0.3.4",
+        "cli-table": "^0.3.11",
         "enquirer": "^2.3.6",
         "minimist": "^1.2.5",
         "mustache": "^4.2.0",
