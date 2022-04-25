@@ -351,7 +351,7 @@ module.exports = {
         },
         codeEditor: {
             /** Select the text editor component used by the editor.
-             * Defaults to "ace", but can be set to "ace" or "monaco"
+             * As of Node-RED V3, this defaults to "monaco", but can be set to "ace" if desired
              */
             lib: "{{codeEditor}}",
             options: {
@@ -363,7 +363,7 @@ module.exports = {
                  */
                 theme: "vs",
                 /** other overrides can be set e.g. fontSize, fontFamily, fontLigatures etc.
-                 * for the full list, see https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.istandaloneeditorconstructionoptions.html
+                 * for the full list, see https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.IStandaloneEditorConstructionOptions.html
                  */
                 //fontSize: 14,
                 //fontFamily: "Cascadia Code, Fira Code, Consolas, 'Courier New', monospace",
