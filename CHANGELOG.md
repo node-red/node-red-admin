@@ -1,3 +1,9 @@
+### 2.2.4
+
+ - Add Dracula theme (#17) @bonanitech
+ - Default to monaco editor for V3 (#19) @Steve-Mcl
+ - Update dependencies
+
 ### 2.2.3
 
  - Update dependencies
