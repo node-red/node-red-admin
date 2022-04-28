@@ -1,3 +1,9 @@
+### 3.0.0
+
+ - Update httpStatic and add httpStaticRoot for changes in Node-RED V3 (#20) @Steve-Mcl
+ - Update dependencies
+ - Drop node 12 support
+
 ### 2.2.4
 
  - Add Dracula theme (#17) @bonanitech
