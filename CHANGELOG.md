@@ -1,3 +1,9 @@
+### 3.1.0
+
+ - Update dependencies (#27) @knolleary
+ - Update template settings for 3.1 (#26) @knolleary
+ - Update monaco link (#25) @knolleary
+
 ### 3.0.0
 
  - Update httpStatic and add httpStaticRoot for changes in Node-RED V3 (#20) @Steve-Mcl
