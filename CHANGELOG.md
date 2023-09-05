@@ -1,9 +1,11 @@
 ### 3.1.0
 
+ - Remove temporary dev comments (#22) @bonanitech
+ - Leave Monaco theme commented out by default (#23) @bonanitech
+ - Add new themes introduced in @node-red-contrib-themes/theme-collection v3.0 (#24) @bonanitech
  - Update dependencies (#27) @knolleary
  - Update template settings for 3.1 (#26) @knolleary
  - Update monaco link (#25) @knolleary
- - Add new themes introduced in @node-red-contrib-themes/theme-collection v3.0 (#24) @bonanitech
 
 ### 3.0.0
 
