@@ -3,6 +3,7 @@
  - Update dependencies (#27) @knolleary
  - Update template settings for 3.1 (#26) @knolleary
  - Update monaco link (#25) @knolleary
+ - Add new themes introduced in @node-red-contrib-themes/theme-collection v3.0 (#24) @bonanitech
 
 ### 3.0.0
 
