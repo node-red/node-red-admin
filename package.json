@@ -1,6 +1,6 @@
 {
     "name": "node-red-admin",
-    "version": "3.1.0",
+    "version": "3.1.1",
     "description": "The Node-RED admin command line interface",
     "homepage": "http://nodered.org",
     "bugs": {
@@ -38,7 +38,6 @@
         "read": "^1.0.7"
     },
     "devDependencies": {
-        "coveralls": "^3.1.1",
         "mocha": "^10.2.0",
         "nyc": "^15.1.0",
         "should": "^13.2.3",

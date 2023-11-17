@@ -1,3 +1,7 @@
+### 3.1.1
+
+ - Bump axios to 1.6.1 (#31) @hardillb
+
 ### 3.1.0
 
  - Remove temporary dev comments (#22) @bonanitech
