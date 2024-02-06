@@ -1,3 +1,7 @@
+### 3.1.2
+
+ - Bump axios to 1.6.7 @knolleary
+
 ### 3.1.1
 
  - Bump axios to 1.6.1 (#31) @hardillb
