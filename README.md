@@ -20,7 +20,7 @@ Install this globally to make the `node-red-admin` command available on your pat
 
 Note: you may need to run this with `sudo`, or from within an Administrator command shell.
 
-You may also need to add `--unsafe-perm` to the command if you hit permissions errors during install.
+You may also need to add `--unsafe-perm` to the command if you hit permissions errors during installation.
 
 ## Usage
 
