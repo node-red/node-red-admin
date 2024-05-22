@@ -2,7 +2,7 @@
 
 The Node-RED admin command line interface.
 
-[![Build Status](https://travis-ci.org/node-red/node-red-admin.svg?branch=master)](https://travis-ci.org/node-red/node-red-admin) [![Coverage Status](https://coveralls.io/repos/node-red/node-red-admin/badge.svg?branch=master)](https://coveralls.io/r/node-red/node-red-admin?branch=master)
+[![Tests](https://github.com/node-red/node-red-admin/actions/workflows/tests.yml/badge.svg)](https://github.com/node-red/node-red-admin/actions/workflows/tests.yml) [![Coverage Status](https://coveralls.io/repos/node-red/node-red-admin/badge.svg?branch=master)](https://coveralls.io/r/node-red/node-red-admin?branch=master)
 
 
 A command line tool for remotely administering Node-RED.
