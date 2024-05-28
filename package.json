@@ -13,7 +13,7 @@
     },
     "main": "lib/index.js",
     "engines": {
-        "node": ">=14"
+        "node": ">=14.17"
     },
     "contributors": [
         {
@@ -35,7 +35,7 @@
         "enquirer": "^2.3.6",
         "minimist": "^1.2.8",
         "mustache": "^4.2.0",
-        "read": "^1.0.7"
+        "read": "^3.0.1"
     },
     "devDependencies": {
         "mocha": "^10.2.0",

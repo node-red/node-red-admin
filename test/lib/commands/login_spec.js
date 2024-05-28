@@ -28,11 +28,11 @@ var result = require("./result_helper");
 describe("commands/list", function() {
     beforeEach(function() {
         sinon.stub(config,"tokens").callsFake(function(token) {});
-        sinon.stub(prompt,"read").callsFake(function(opts,callback) {
+        sinon.stub(prompt, "read").callsFake(function(opts) {
             if (/Username/.test(opts.prompt)) {
-                callback(null,"username");
+                return Promise.resolve("username");
             } else if (/Password/.test(opts.prompt)) {
-                callback(null,"password");
+                return Promise.resolve("password");
             }
         });
     });

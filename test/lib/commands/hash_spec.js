@@ -16,7 +16,7 @@
 
 var command = require("../../../lib/commands/hash");
 
-var prompt = require("../../../lib/prompt");
+const prompt = require("../../../lib/prompt");
 
 var should = require("should");
 var sinon = require("sinon");
@@ -34,8 +34,8 @@ describe("commands/hash-pw", function() {
         prompt.read.restore();
     });
     it('generates a bcrypt hash of provided password',function(done) {
-        sinon.stub(prompt,"read").callsFake(function(opts,callback) {
-            callback(null,"a-test-password");
+        sinon.stub(prompt, "read").callsFake(function(opts) {
+            return Promise.resolve("a-test-password");
         });
 
         command({},result).then(function() {
@@ -48,8 +48,8 @@ describe("commands/hash-pw", function() {
         });
     });
     it('ignores blank password',function(done) {
-        sinon.stub(prompt,"read").callsFake(function(opts,callback) {
-            callback(null,"");
+        sinon.stub(prompt, "read").callsFake(function(opts) {
+            return Promise.resolve("");
         });
 
         command({},result).then(function() {
@@ -58,8 +58,8 @@ describe("commands/hash-pw", function() {
         });
     });
     it('ignores null password',function(done) {
-        sinon.stub(prompt,"read").callsFake(function(opts,callback) {
-            callback(null,null);
+        sinon.stub(prompt, "read").callsFake(function(opts) {
+            return Promise.resolve(null);
         });
 
         command({},result).then(function() {
