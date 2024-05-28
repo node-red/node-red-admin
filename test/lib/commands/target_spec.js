@@ -37,7 +37,7 @@ describe("commands/target", function() {
     });
 
     it('queries the target', function(done) {
-        command({_:[]},result).then(() => {;
+        command({_:[]},result).then(() => {
             config.target.called.should.be.true();
             config.target.args[0].should.have.lengthOf(0);
             result.log.called.should.be.true();
