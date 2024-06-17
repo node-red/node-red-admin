@@ -25,14 +25,14 @@ var request = require("../../../lib/request");
 var config = require("../../../lib/config");
 var result = require("./result_helper");
 
-describe("commands/list", function() {
+describe("commands/login", function() {
     beforeEach(function() {
         sinon.stub(config,"tokens").callsFake(function(token) {});
-        sinon.stub(prompt,"read").callsFake(function(opts,callback) {
+        sinon.stub(prompt,"read").callsFake(function(opts) {
             if (/Username/.test(opts.prompt)) {
-                callback(null,"username");
+                return Promise.resolve("username")
             } else if (/Password/.test(opts.prompt)) {
-                callback(null,"password");
+                return Promise.resolve("password")
             }
         });
     });
@@ -68,7 +68,10 @@ describe("commands/list", function() {
             /Logged in/.test(result.log.args[0][0]).should.be.true();
 
             done();
-        }).catch(done);
+        }).catch(err=> {
+            console.log("CAUGH", err);
+            done(err)
+        });
     });
 
     it('handles unsupported login type', function(done) {

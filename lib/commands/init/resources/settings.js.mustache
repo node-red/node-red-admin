@@ -136,11 +136,13 @@ module.exports = {
  *  - httpServerOptions
  *  - httpAdminRoot
  *  - httpAdminMiddleware
+ *  - httpAdminCookieOptions
  *  - httpNodeRoot
  *  - httpNodeCors
  *  - httpNodeMiddleware
  *  - httpStatic
- * - httpStaticRoot
+ *  - httpStaticRoot
+ *  - httpStaticCors
  ******************************************************************************/
 
     /** the tcp port that the Node-RED web server is listening on */
@@ -181,10 +183,15 @@ module.exports = {
     //    next();
     // },
 
+    /** The following property can be used to set addition options on the session
+     * cookie used as part of adminAuth authentication system
+     * Available options are documented here: https://www.npmjs.com/package/express-session#cookie
+     */
+    // httpAdminCookieOptions: { },
 
     /** Some nodes, such as HTTP In, can be used to listen for incoming http requests.
      * By default, these are served relative to '/'. The following property
-     * can be used to specifiy a different root path. If set to false, this is
+     * can be used to specify a different root path. If set to false, this is
      * disabled.
      */
     //httpNodeRoot: '/red-nodes',
@@ -226,10 +233,18 @@ module.exports = {
      * to move httpAdminRoot
      */
     //httpStatic: '/home/nol/node-red-static/', //single static source
-    /* OR multiple static sources can be created using an array of objects... */
+    /**
+     *  OR multiple static sources can be created using an array of objects...
+     *  Each object can also contain an options object for further configuration.
+     *  See https://expressjs.com/en/api.html#express.static for available options.
+     *  They can also contain an option `cors` object to set specific Cross-Origin
+     *  Resource Sharing rules for the source. `httpStaticCors` can be used to
+     *  set a default cors policy across all static routes.
+     */
     //httpStatic: [
     //    {path: '/home/nol/pics/',    root: "/img/"}, 
     //    {path: '/home/nol/reports/', root: "/doc/"}, 
+    //    {path: '/home/nol/videos/',  root: "/vid/", options: {maxAge: '1d'}}
     //],
 
     /**  
@@ -242,9 +257,26 @@ module.exports = {
      */
     //httpStaticRoot: '/static/',
 
+    /** The following property can be used to configure cross-origin resource sharing
+     * in the http static routes.
+     * See https://github.com/troygoode/node-cors#configuration-options for
+     * details on its contents. The following is a basic permissive set of options:
+     */
+    //httpStaticCors: {
+    //    origin: "*",
+    //    methods: "GET,PUT,POST,DELETE"
+    //},
+
+    /** The following property can be used to modify proxy options */
+    // proxyOptions: {
+    //     mode: "legacy", // legacy mode is for non-strict previous proxy determination logic (node-red < v4 compatible)
+    // },
+
 /*******************************************************************************
  * Runtime Settings
  *  - lang
+ *  - runtimeState
+ *  - diagnostics
  *  - logging
  *  - contextStorage
  *  - exportGlobalContextKeys
@@ -257,6 +289,31 @@ module.exports = {
       */
      // lang: "de",
 
+    /** Configure diagnostics options
+     * - enabled:  When `enabled` is `true` (or unset), diagnostics data will
+     *   be available at http://localhost:1880/diagnostics
+     * - ui: When `ui` is `true` (or unset), the action `show-system-info` will
+     *   be available to logged in users of node-red editor
+    */
+    diagnostics: {
+        /** enable or disable diagnostics endpoint. Must be set to `false` to disable */
+        enabled: true,
+        /** enable or disable diagnostics display in the node-red editor. Must be set to `false` to disable */
+        ui: true,
+    },
+    /** Configure runtimeState options
+     * - enabled:  When `enabled` is `true` flows runtime can be Started/Stopped
+     *   by POSTing to available at http://localhost:1880/flows/state
+     * - ui: When `ui` is `true`, the action `core:start-flows` and
+     *   `core:stop-flows` will be available to logged in users of node-red editor
+     *   Also, the deploy menu (when set to default) will show a stop or start button
+     */
+    runtimeState: {
+        /** enable or disable flows/state endpoint. Must be set to `false` to disable */
+        enabled: false,
+        /** show or hide runtime stop/start options in the node-red editor. Must be set to `false` to hide */
+        ui: false,
+    },
      /** Configure the logging output */
      logging: {
          /** Only console logging is currently supported */
@@ -308,19 +365,22 @@ module.exports = {
       * will install/load. It can use '*' as a wildcard that matches anything.
       */
      externalModules: {
-         // autoInstall: false,   /** Whether the runtime will attempt to automatically install missing modules */
-         // autoInstallRetry: 30, /** Interval, in seconds, between reinstall attempts */
-         // palette: {              /** Configuration for the Palette Manager */
-         //     allowInstall: true, /** Enable the Palette Manager in the editor */
-         //     allowUpload: true,  /** Allow module tgz files to be uploaded and installed */
-         //     allowList: [],
-         //     denyList: []
-         // },
-         // modules: {              /** Configuration for node-specified modules */
-         //     allowInstall: true,
-         //     allowList: [],
-         //     denyList: []
-         // }
+        // autoInstall: false,   /** Whether the runtime will attempt to automatically install missing modules */
+        // autoInstallRetry: 30, /** Interval, in seconds, between reinstall attempts */
+        // palette: {              /** Configuration for the Palette Manager */
+        //     allowInstall: true, /** Enable the Palette Manager in the editor */
+        //     allowUpdate: true,  /** Allow modules to be updated in the Palette Manager */
+        //     allowUpload: true,  /** Allow module tgz files to be uploaded and installed */
+        //     allowList: ['*'],
+        //     denyList: [],
+        //     allowUpdateList: ['*'],
+        //     denyUpdateList: []
+        // },
+        // modules: {              /** Configuration for node-specified modules */
+        //     allowInstall: true,
+        //     allowList: [],
+        //     denyList: []
+        // }
      },
 
 
@@ -346,6 +406,12 @@ module.exports = {
          * a collection of themes to chose from.
          */
         {{^editorTheme}}//{{/editorTheme}}theme: "{{editorTheme}}",
+
+        /** To disable the 'Welcome to Node-RED' tour that is displayed the first
+         * time you access the editor for each release of Node-RED, set this to false
+         */
+        //tours: false,
+
         palette: {
             /** The following property can be used to order the categories in the editor
              * palette. If a node's category is not in the list, the category will get
@@ -367,6 +433,7 @@ module.exports = {
                 mode: "{{projects.workflow}}"
             }
         },
+
         codeEditor: {
             /** Select the text editor component used by the editor.
              * As of Node-RED V3, this defaults to "monaco", but can be set to "ace" if desired
@@ -387,7 +454,19 @@ module.exports = {
                 //fontFamily: "Cascadia Code, Fira Code, Consolas, 'Courier New', monospace",
                 //fontLigatures: true,
             }
-        }
+        },
+        markdownEditor: {
+            mermaid: {
+                /** enable or disable mermaid diagram in markdown document
+                 */
+                enabled: true
+            }
+        },
+
+        multiplayer: {
+            /** To enable the Multiplayer feature, set this value to true */
+            enabled: false
+        },
     },
 
 /*******************************************************************************
@@ -400,6 +479,7 @@ module.exports = {
  *  - ui (for use with Node-RED Dashboard)
  *  - debugUseColors
  *  - debugMaxLength
+ *  - debugStatusLength
  *  - execMaxBufferSize
  *  - httpRequestTimeout
  *  - mqttReconnectTime
@@ -455,6 +535,9 @@ module.exports = {
     /** The maximum length, in characters, of any message sent to the debug sidebar tab */
     debugMaxLength: 1000,
 
+    /** The maximum length, in characters, of status messages under the debug node */
+    //debugStatusLength: 32,
+
     /** Maximum buffer size for the exec node. Defaults to 10Mb */
     //execMaxBufferSize: 10000000,
 
@@ -488,7 +571,7 @@ module.exports = {
      */
     //tlsConfigDisableLocalFiles: true,
 
-    /** The following property can be used to verify websocket connection attempts.
+    /** The following property can be used to verify WebSocket connection attempts.
      * This allows, for example, the HTTP request headers to be checked to ensure
      * they include valid authentication information.
      */
