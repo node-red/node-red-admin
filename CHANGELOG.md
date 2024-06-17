@@ -1,3 +1,10 @@
+### 4.0.0
+
+ - Update template settings for 4.0
+ - Update dependencies
+ - Replace bcrypt with @node-rs/bcrypt
+ - Set minimum node.js version to 18
+
 ### 3.1.3
 
  - Bump axios to 1.6.8 @knolleary
