@@ -1,3 +1,7 @@
+### 4.0.1
+
+ - Updated axios and mocha dependencies @knolleary
+
 ### 4.0.0
 
  - Update template settings for 4.0
