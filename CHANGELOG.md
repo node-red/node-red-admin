@@ -1,3 +1,7 @@
+### 4.0.2
+
+ - Update dependencies @knolleary
+
 ### 4.0.1
 
  - Updated axios and mocha dependencies @knolleary
