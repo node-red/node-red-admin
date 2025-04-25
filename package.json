@@ -1,6 +1,6 @@
 {
     "name": "node-red-admin",
-    "version": "4.0.2",
+    "version": "4.1.0",
     "description": "The Node-RED admin command line interface",
     "homepage": "https://nodered.org",
     "bugs": {

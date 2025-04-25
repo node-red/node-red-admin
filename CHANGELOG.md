@@ -1,3 +1,7 @@
+### 4.1.0
+
+ - Add telemetry consent to init command @knolleary
+
 ### 4.0.2
 
  - Update dependencies @knolleary
