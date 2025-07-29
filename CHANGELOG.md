@@ -1,3 +1,8 @@
+### 4.1.1
+
+ - Update dependencies @knolleary
+ - Add new themes introduced in @node-red-contrib-themes/theme-collection v4.1 (#50) @bonanitech
+
 ### 4.1.0
 
  - Add telemetry consent to init command @knolleary
