@@ -1,3 +1,7 @@
+### 4.1.2
+
+ - chore: update axios to 1.12.2 (#53) @bryopsida
+
 ### 4.1.1
 
  - Update dependencies @knolleary
