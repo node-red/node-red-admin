@@ -1,3 +1,7 @@
+### 4.1.3
+
+ - Update axios dependency (fixes GHSA-43fc-jf86-j433) (#55) @hlovdal
+
 ### 4.1.2
 
  - chore: update axios to 1.12.2 (#53) @bryopsida
