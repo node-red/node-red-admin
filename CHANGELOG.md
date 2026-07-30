@@ -1,6 +1,10 @@
+### 4.1.7
+
+ - Update axios dependency
+
 ### 4.1.6
 
- - Update acios dependency
+ - Update axios dependency
 
 ### 4.1.5
 
