@@ -1,3 +1,7 @@
+### 4.1.8
+
+ - Update axios to 1.20.0 (#64) @tobsch04
+
 ### 4.1.7
 
  - Update axios dependency
